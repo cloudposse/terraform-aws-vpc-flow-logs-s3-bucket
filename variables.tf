@@ -41,14 +41,9 @@ variable "vpc_id" {
   description = "VPC ID the DB instance will be created in"
 }
 
-variable "subnet_ids" {
-  description = "List of subnets for the DB"
-  type        = "list"
-}
-
 variable "acl" {
-  description = "The canned ACL to apply. We recommend log-delivery-write for compatibility with AWS services"
-  default     = "log-delivery-write"
+  description = "The canned ACL to apply. We recommend `private` for compatibility with AWS services"
+  default     = "private"
 }
 
 variable "policy" {
@@ -72,7 +67,7 @@ variable "region" {
 }
 
 variable "force_destroy" {
-  description = "(Optional, Default:false ) A boolean that indicates all objects should be deleted from the bucket so that the bucket can be destroyed without error. These objects are not recoverable."
+  description = "A boolean that indicates all objects should be deleted from the bucket so that the bucket can be destroyed without error. These objects are not recoverable."
   default     = "false"
 }
 
