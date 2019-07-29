@@ -54,7 +54,7 @@ module "s3_bucket" {
 }
 
 resource "aws_flow_log" "default" {
-  log_destination      = "${module.s3_bucket.arn}"
+  log_destination      = "${module.s3_bucket.bucket_arn}"
   log_destination_type = "s3"
   traffic_type         = "${var.traffic_type}"
   vpc_id               = "${var.vpc_id}"
