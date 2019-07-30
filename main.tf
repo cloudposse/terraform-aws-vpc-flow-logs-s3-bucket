@@ -48,9 +48,51 @@ module "s3_bucket" {
   noncurrent_version_expiration_days = "${var.noncurrent_version_expiration_days}"
   noncurrent_version_transition_days = "${var.noncurrent_version_transition_days}"
   standard_transition_days           = "${var.standard_transition_days}"
-  policy                             = "${var.policy}"
+  #policy                             = "${module.policy.result_document}"
 
   force_destroy = "${var.force_destroy}"
+}
+
+//module "policy" {
+//  source           = "git::https://github.com/cloudposse/terraform-aws-iam-policy-document-aggregator.git?ref=tags/0.1.2"
+//  source_documents = ["${var.policy}", "${data.aws_iam_policy_document.assume_role.json}"]
+//}
+//
+data "aws_iam_policy_document" "assume_role" {
+  statement {
+    sid = "AWSLogDeliveryAclCheck"
+    effect  = "Allow"
+    actions = ["s3:GetBucketAcl"]
+    resources = ["${module.s3_bucket.bucket_arn}"]
+
+    principals {
+      type = "Service"
+      identifiers = ["delivery.logs.amazonaws.com"]
+    }
+  }
+
+  statement {
+    sid = "AWSLogDeliveryWrite"
+    effect  = "Allow"
+    actions = ["s3:PutObject"]
+    resources = ["${module.s3_bucket.bucket_arn}/*"]
+
+    condition {
+      test = "StringEquals"
+      values = ["bucket-owner-full-control"]
+      variable = "s3:x-amz-acl"
+    }
+
+    principals {
+      type = "Service"
+      identifiers = ["delivery.logs.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_s3_bucket_policy" "default" {
+  bucket = "${module.s3_bucket.bucket_arn}"
+  policy = "${data.aws_iam_policy_document.assume_role.json}"
 }
 
 resource "aws_flow_log" "default" {
