@@ -8,8 +8,28 @@ module "label" {
   tags       = "${var.tags}"
 }
 
+data "aws_iam_policy_document" "kms" {
+  statement {
+    sid = "Allow VPC Flow Logs to use the key"
+    effect  = "Allow"
+    actions = [
+      "kms:Encrypt",
+      "kms:Decrypt",
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
+      "kms:DescribeKey"
+    ]
+    resources = ["*"]
+
+    principals {
+      type = "Service"
+      identifiers = ["delivery.logs.amazonaws.com"]
+    }
+  }
+}
+
 module "kms_key" {
-  source     = "git::https://github.com/cloudposse/terraform-aws-kms-key.git?ref=tags/0.1.2"
+  source     = "git::https://github.com/cloudposse/terraform-aws-kms-key.git?ref=0.11/added-policy"
   namespace  = "${var.namespace}"
   name       = "${var.name}"
   stage      = "${var.stage}"
@@ -20,7 +40,8 @@ module "kms_key" {
   description             = "KMS key for VPC flow logs"
   deletion_window_in_days = 10
   enable_key_rotation     = "true"
-  alias                   = "alias/vpc_flow_logs"
+
+  policy  = "${data.aws_iam_policy_document.kms.json}"
 }
 
 module "s3_bucket" {
@@ -48,17 +69,11 @@ module "s3_bucket" {
   noncurrent_version_expiration_days = "${var.noncurrent_version_expiration_days}"
   noncurrent_version_transition_days = "${var.noncurrent_version_transition_days}"
   standard_transition_days           = "${var.standard_transition_days}"
-  #policy                             = "${module.policy.result_document}"
 
   force_destroy = "${var.force_destroy}"
 }
 
-//module "policy" {
-//  source           = "git::https://github.com/cloudposse/terraform-aws-iam-policy-document-aggregator.git?ref=tags/0.1.2"
-//  source_documents = ["${var.policy}", "${data.aws_iam_policy_document.assume_role.json}"]
-//}
-//
-data "aws_iam_policy_document" "assume_role" {
+data "aws_iam_policy_document" "s3" {
   statement {
     sid = "AWSLogDeliveryAclCheck"
     effect  = "Allow"
@@ -92,7 +107,7 @@ data "aws_iam_policy_document" "assume_role" {
 
 resource "aws_s3_bucket_policy" "default" {
   bucket = "${module.s3_bucket.bucket_arn}"
-  policy = "${data.aws_iam_policy_document.assume_role.json}"
+  policy = "${data.aws_iam_policy_document.s3.json}"
 }
 
 resource "aws_flow_log" "default" {
