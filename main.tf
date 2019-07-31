@@ -113,6 +113,8 @@ module "s3_bucket" {
   standard_transition_days           = "${var.standard_transition_days}"
 
   force_destroy = "${var.force_destroy}"
+
+//  policy = "${data.aws_iam_policy_document.s3.json}"
 }
 
 data "aws_iam_policy_document" "s3" {
@@ -124,9 +126,7 @@ data "aws_iam_policy_document" "s3" {
       "s3:GetBucketAcl",
     ]
 
-    resources = [
-      "${module.s3_bucket.bucket_arn}",
-    ]
+    resources = [ "*" ]
 
     principals {
       type = "Service"
@@ -145,9 +145,7 @@ data "aws_iam_policy_document" "s3" {
       "s3:PutObject",
     ]
 
-    resources = [
-      "${module.s3_bucket.bucket_arn}/*",
-    ]
+    resources = [ "*" ]
 
     condition {
       test = "StringEquals"
@@ -169,10 +167,10 @@ data "aws_iam_policy_document" "s3" {
   }
 }
 
-//resource "aws_s3_bucket_policy" "default" {
-//  bucket = "${module.s3_bucket.bucket_arn}"
-//  policy = "${data.aws_iam_policy_document.s3.json}"
-//}
+resource "aws_s3_bucket_policy" "default" {
+  bucket = "${module.s3_bucket.bucket_arn}"
+  policy = "${data.aws_iam_policy_document.s3.json}"
+}
 
 resource "aws_flow_log" "default" {
   log_destination      = "${module.s3_bucket.bucket_arn}"
