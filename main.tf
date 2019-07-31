@@ -113,8 +113,6 @@ module "s3_bucket" {
   standard_transition_days           = "${var.standard_transition_days}"
 
   force_destroy = "${var.force_destroy}"
-
-  policy = "${data.aws_iam_policy_document.s3.json}"
 }
 
 data "aws_iam_policy_document" "s3" {
