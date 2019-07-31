@@ -108,5 +108,5 @@ variable "expiration_days" {
 
 variable "traffic_type" {
   description = "The type of traffic to capture. Valid values: `ACCEPT`, `REJECT`, `ALL`"
-  default = "ALL"
+  default     = "ALL"
 }
