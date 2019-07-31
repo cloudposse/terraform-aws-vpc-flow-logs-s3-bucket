@@ -169,10 +169,10 @@ data "aws_iam_policy_document" "s3" {
   }
 }
 
-resource "aws_s3_bucket_policy" "default" {
-  bucket = "${module.s3_bucket.bucket_arn}"
-  policy = "${data.aws_iam_policy_document.s3.json}"
-}
+//resource "aws_s3_bucket_policy" "default" {
+//  bucket = "${module.s3_bucket.bucket_arn}"
+//  policy = "${data.aws_iam_policy_document.s3.json}"
+//}
 
 resource "aws_flow_log" "default" {
   log_destination      = "${module.s3_bucket.bucket_arn}"
