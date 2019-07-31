@@ -8,6 +8,8 @@ module "label" {
   tags       = "${var.tags}"
 }
 
+data "aws_caller_identity" "current" {}
+
 data "aws_iam_policy_document" "kms" {
   statement {
     sid       = "Enable IAM User Permissions"
@@ -19,7 +21,7 @@ data "aws_iam_policy_document" "kms" {
       type = "AWS"
 
       identifiers = [
-        "arn:aws:iam::638153943796:root",
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
       ]
     }
   }
@@ -29,11 +31,11 @@ data "aws_iam_policy_document" "kms" {
     effect = "Allow"
 
     actions = [
-      "kms:Encrypt",
-      "kms:Decrypt",
+      "kms:Encrypt*",
+      "kms:Decrypt*",
       "kms:ReEncrypt*",
       "kms:GenerateDataKey*",
-      "kms:DescribeKey",
+      "kms:Describe*"
     ]
 
     resources = [
