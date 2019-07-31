@@ -114,7 +114,7 @@ module "s3_bucket" {
 
   force_destroy = "${var.force_destroy}"
 
-//  policy = "${data.aws_iam_policy_document.s3.json}"
+  policy = "${data.aws_iam_policy_document.s3.json}"
 }
 
 data "aws_iam_policy_document" "s3" {
@@ -126,7 +126,9 @@ data "aws_iam_policy_document" "s3" {
       "s3:GetBucketAcl",
     ]
 
-    resources = [ "*" ]
+    resources = [
+      "${module.s3_bucket.bucket_arn}",
+    ]
 
     principals {
       type = "Service"
@@ -145,7 +147,9 @@ data "aws_iam_policy_document" "s3" {
       "s3:PutObject",
     ]
 
-    resources = [ "*" ]
+    resources = [
+      "${module.s3_bucket.bucket_arn}/*",
+    ]
 
     condition {
       test = "StringEquals"
