@@ -67,26 +67,6 @@ module "kms_key" {
 
   policy = "${data.aws_iam_policy_document.kms.json}"
 }
-//
-//resource "aws_kms_grant" "a" {
-//  name              = "my-grant"
-//  key_id            = "${module.kms_key.key_id}"
-//  grantee_principal = "${}"
-//
-//  operations = [
-//    "Encrypt",
-//    "Decrypt",
-//    "ReEncrypt",
-//    "GenerateDataKey",
-//    "DescribeKey",
-//  ]
-//
-//  constraints {
-//    encryption_context_equals = {
-//      Department = "Finance"
-//    }
-//  }
-//}
 
 module "s3_bucket" {
   source     = "git::https://github.com/cloudposse/terraform-aws-s3-log-storage.git?ref=tags/0.4.0"
@@ -98,7 +78,7 @@ module "s3_bucket" {
   attributes = "${var.attributes}"
   tags       = "${var.tags}"
 
-  kms_master_key_id = "${module.kms_key.key_id}"
+  kms_master_key_id = "${module.kms_key.key_arn}"
   sse_algorithm     = "aws:kms"
 
   versioning_enabled = "false"
