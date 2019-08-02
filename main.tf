@@ -69,7 +69,7 @@ module "kms_key" {
 }
 
 module "s3_bucket" {
-  source     = "git::https://github.com/cloudposse/terraform-aws-s3-log-storage.git?ref=tags/0.4.0"
+  source     = "git::https://github.com/cloudposse/terraform-aws-s3-log-storage.git?ref=tags/0.4.1"
   enabled    = "${var.enabled}"
   namespace  = "${var.namespace}"
   name       = "${var.name}"
@@ -78,8 +78,8 @@ module "s3_bucket" {
   attributes = "${var.attributes}"
   tags       = "${var.tags}"
 
-  kms_master_key_id = "${module.kms_key.key_arn}"
-  sse_algorithm     = "aws:kms"
+  kms_master_key_arn = "${module.kms_key.alias_arn}"
+  sse_algorithm      = "aws:kms"
 
   versioning_enabled = "false"
 
@@ -96,65 +96,6 @@ module "s3_bucket" {
 
   force_destroy = "${var.force_destroy}"
 }
-
-data "aws_iam_policy_document" "s3" {
-  statement {
-    sid    = "AWSLogDeliveryAclCheck"
-    effect = "Allow"
-
-    actions = [
-      "s3:GetBucketAcl",
-    ]
-
-    resources = [
-      "${module.s3_bucket.bucket_arn}",
-    ]
-
-    principals {
-      type = "Service"
-
-      identifiers = [
-        "delivery.logs.amazonaws.com",
-      ]
-    }
-  }
-
-  statement {
-    sid    = "AWSLogDeliveryWrite"
-    effect = "Allow"
-
-    actions = [
-      "s3:PutObject",
-    ]
-
-    resources = [
-      "${module.s3_bucket.bucket_arn}/*",
-    ]
-
-    condition {
-      test = "StringEquals"
-
-      values = [
-        "bucket-owner-full-control",
-      ]
-
-      variable = "s3:x-amz-acl"
-    }
-
-    principals {
-      type = "Service"
-
-      identifiers = [
-        "delivery.logs.amazonaws.com",
-      ]
-    }
-  }
-}
-
-//resource "aws_s3_bucket_policy" "default" {
-//  bucket = "${module.s3_bucket.bucket_id}"
-//  policy = "${data.aws_iam_policy_document.s3.json}"
-//}
 
 resource "aws_flow_log" "default" {
   log_destination      = "${module.s3_bucket.bucket_arn}"
