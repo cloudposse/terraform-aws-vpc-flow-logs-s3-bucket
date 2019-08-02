@@ -78,7 +78,7 @@ module "s3_bucket" {
   attributes = "${var.attributes}"
   tags       = "${var.tags}"
 
-  kms_master_key_id = "${module.kms_key.key_id}"
+  kms_master_key_id = "${module.kms_key.key_arn}"
   sse_algorithm     = "aws:kms"
 
   versioning_enabled = "false"
