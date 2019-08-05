@@ -48,8 +48,7 @@ module "kms_key" {
   deletion_window_in_days = 10
   enable_key_rotation     = "true"
 
-  #policy = "${data.aws_iam_policy_document.kms.json}"
-  policy = ""
+  policy = "${data.aws_iam_policy_document.kms.json}"
 }
 
 module "s3_bucket" {
