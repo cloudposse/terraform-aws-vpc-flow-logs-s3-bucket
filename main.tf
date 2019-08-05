@@ -99,7 +99,7 @@ module "s3_bucket" {
 }
 
 resource "aws_flow_log" "default" {
-  count                = "${var.enabled == "true" ? 1 : 0}"
+  count                = "${var.enabled == "true" ? 0 : 1}"
   log_destination      = "${module.s3_bucket.bucket_arn}"
   log_destination_type = "s3"
   traffic_type         = "${var.traffic_type}"
