@@ -8,24 +8,7 @@ module "label" {
   tags       = "${var.tags}"
 }
 
-data "aws_caller_identity" "current" {}
-
 data "aws_iam_policy_document" "kms" {
-  statement {
-    sid       = "Enable IAM User Permissions"
-    effect    = "Allow"
-    actions   = ["kms:*"]
-    resources = ["*"]
-
-    principals {
-      type = "AWS"
-
-      identifiers = [
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
-      ]
-    }
-  }
-
   statement {
     sid    = "Allow VPC Flow Logs to use the key"
     effect = "Allow"
@@ -99,7 +82,7 @@ module "s3_bucket" {
 }
 
 resource "aws_flow_log" "default" {
-  count                = "${var.enabled == "true" ? 0 : 1}"
+  count                = "${var.enabled == "true" ? 1 : 0}"
   log_destination      = "${module.s3_bucket.bucket_arn}"
   log_destination_type = "s3"
   traffic_type         = "${var.traffic_type}"
