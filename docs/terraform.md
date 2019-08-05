@@ -25,3 +25,17 @@
 | versioning_enabled | A state of versioning. Versioning is a means of keeping multiple variants of an object in the same bucket. | string | `false` | no |
 | vpc_id | VPC ID the DB instance will be created in | string | - | yes |
 
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| bucket_arn | Bucket ARN |
+| bucket_domain_name | FQDN of bucket |
+| bucket_id | Bucket Name (aka ID) |
+| bucket_prefix | Bucket prefix configured for lifecycle rules |
+| id | The Flow Log ID |
+| kms_alias_arn | KMS Alias ARN |
+| kms_alias_name | KMS Alias name |
+| kms_key_arn | KMS Key ARN |
+| kms_key_id | KMS Key ID |
+

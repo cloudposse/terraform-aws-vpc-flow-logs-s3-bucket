@@ -1,0 +1,44 @@
+output "kms_key_arn" {
+  value       = "${module.kms_key.key_arn}"
+  description = "KMS Key ARN"
+}
+
+output "kms_key_id" {
+  value       = "${module.kms_key.key_id}"
+  description = "KMS Key ID"
+}
+
+output "kms_alias_arn" {
+  value       = "${module.kms_key.alias_arn}"
+  description = "KMS Alias ARN"
+}
+
+output "kms_alias_name" {
+  value       = "${module.kms_key.alias_name}"
+  description = "KMS Alias name"
+}
+
+output "bucket_domain_name" {
+  value       = "${module.s3_bucket.bucket_domain_name}"
+  description = "FQDN of bucket"
+}
+
+output "bucket_id" {
+  value       = "${module.s3_bucket.bucket_id}"
+  description = "Bucket Name (aka ID)"
+}
+
+output "bucket_arn" {
+  value       = "${module.s3_bucket.bucket_arn}"
+  description = "Bucket ARN"
+}
+
+output "bucket_prefix" {
+  value       = "${module.s3_bucket.prefix}"
+  description = "Bucket prefix configured for lifecycle rules"
+}
+
+output "id" {
+  value       = "${join("", aws_flow_log.default.*.id)}"
+  description = "The Flow Log ID"
+}

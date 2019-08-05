@@ -18,7 +18,7 @@ data "aws_iam_policy_document" "kms" {
       "kms:Decrypt*",
       "kms:ReEncrypt*",
       "kms:GenerateDataKey*",
-      "kms:Describe*"
+      "kms:Describe*",
     ]
 
     resources = [
@@ -36,7 +36,7 @@ data "aws_iam_policy_document" "kms" {
 }
 
 module "kms_key" {
-  source     = "git::https://github.com/cloudposse/terraform-aws-kms-key.git?ref=0.11/added-policy"
+  source     = "git::https://github.com/cloudposse/terraform-aws-kms-key.git?ref=0.1.3"
   namespace  = "${var.namespace}"
   name       = "${var.name}"
   stage      = "${var.stage}"
