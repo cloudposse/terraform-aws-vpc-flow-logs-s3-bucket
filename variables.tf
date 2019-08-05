@@ -41,16 +41,6 @@ variable "vpc_id" {
   description = "VPC ID the DB instance will be created in"
 }
 
-variable "acl" {
-  description = "The canned ACL to apply. We recommend `private` for compatibility with AWS services"
-  default     = "private"
-}
-
-variable "policy" {
-  description = "A valid bucket policy JSON document. Note that if the policy document is not specific enough (but still valid), Terraform may view the policy as constantly changing in a terraform plan. In this case, please make sure you use the verbose/specific version of the policy."
-  default     = ""
-}
-
 variable "lifecycle_prefix" {
   description = "Prefix filter. Used to manage object lifecycle events."
   default     = ""
@@ -74,11 +64,6 @@ variable "force_destroy" {
 variable "lifecycle_rule_enabled" {
   description = "Enable lifecycle events on this bucket"
   default     = "true"
-}
-
-variable "versioning_enabled" {
-  description = "A state of versioning. Versioning is a means of keeping multiple variants of an object in the same bucket."
-  default     = "false"
 }
 
 variable "noncurrent_version_expiration_days" {
