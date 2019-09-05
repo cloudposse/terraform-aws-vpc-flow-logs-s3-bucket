@@ -1,5 +1,6 @@
 module "label" {
-  source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.3.3"
+  source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.11.1"
+  enabled    = "${var.enabled}"
   namespace  = "${var.namespace}"
   name       = "${var.name}"
   stage      = "${var.stage}"
@@ -36,7 +37,8 @@ data "aws_iam_policy_document" "kms" {
 }
 
 module "kms_key" {
-  source     = "git::https://github.com/cloudposse/terraform-aws-kms-key.git?ref=0.1.3"
+  source     = "git::https://github.com/cloudposse/terraform-aws-kms-key.git?ref=0.1.4"
+  enabled    = "${var.enabled}"
   namespace  = "${var.namespace}"
   name       = "${var.name}"
   stage      = "${var.stage}"
