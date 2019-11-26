@@ -9,8 +9,30 @@ module "label" {
   tags       = var.tags
 }
 
+data "aws_caller_identity" "current" {}
+
 data "aws_iam_policy_document" "kms" {
   count = var.enabled ? 1 : 0
+  statement {
+    sid    = "Enable IAM User Permissions"
+    effect = "Allow"
+
+    actions = [
+      "kms:*"
+    ]
+
+    resources = [
+      "*"
+    ]
+
+    principals {
+      type = "AWS"
+
+      identifiers = [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+      ]
+    }
+  }
 
   statement {
     sid    = "Allow VPC Flow Logs to use the key"
