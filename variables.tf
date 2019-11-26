@@ -48,7 +48,7 @@ variable "tags" {
 
 variable "vpc_id" {
   type        = string
-  description = "VPC ID the DB instance will be created in"
+  description = "VPC ID to create flow logs for"
 }
 
 variable "lifecycle_prefix" {
