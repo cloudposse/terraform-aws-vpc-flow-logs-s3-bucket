@@ -1,30 +1,37 @@
-variable "enabled" {
-  type        = bool
-  description = "Set to false to prevent the module from creating any resources"
-  default     = true
-}
-
 variable "namespace" {
   type        = string
-  description = "Namespace (e.g. `eg` or `cp`)"
   default     = ""
+  description = "Namespace, which could be your organization name or abbreviation, e.g. 'eg' or 'cp'"
+}
+
+variable "environment" {
+  type        = string
+  default     = ""
+  description = "Environment, e.g. 'prod', 'staging', 'dev', 'pre-prod', 'UAT'"
 }
 
 variable "stage" {
   type        = string
-  description = "Stage (e.g. `prod`, `dev`, `staging`)"
   default     = ""
+  description = "Stage, e.g. 'prod', 'staging', 'dev', OR 'source', 'build', 'test', 'deploy', 'release'"
 }
 
 variable "name" {
   type        = string
-  description = "The Name of the application or solution  (e.g. `bastion` or `portal`)"
+  default     = ""
+  description = "Solution name, e.g. 'app' or 'jenkins'"
+}
+
+variable "enabled" {
+  type        = bool
+  default     = true
+  description = "Set to false to prevent the module from creating any resources"
 }
 
 variable "delimiter" {
   type        = string
   default     = "-"
-  description = "Delimiter to be used between `name`, `namespace`, `stage` and `attributes`"
+  description = "Delimiter to be used between `namespace`, `environment`, `stage`, `name` and `attributes`"
 }
 
 variable "attributes" {
@@ -36,7 +43,7 @@ variable "attributes" {
 variable "tags" {
   type        = map(string)
   default     = {}
-  description = "Additional tags (e.g. map(`BusinessUnit`,`XYZ`)"
+  description = "Additional tags (e.g. `map('BusinessUnit','XYZ')`"
 }
 
 variable "vpc_id" {
