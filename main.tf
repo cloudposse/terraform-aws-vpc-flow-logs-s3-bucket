@@ -1,12 +1,13 @@
 module "label" {
-  source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.16.0"
-  enabled    = var.enabled
-  namespace  = var.namespace
-  name       = var.name
-  stage      = var.stage
-  delimiter  = var.delimiter
-  attributes = var.attributes
-  tags       = var.tags
+  source      = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.16.0"
+  enabled     = var.enabled
+  namespace   = var.namespace
+  name        = var.name
+  stage       = var.stage
+  environment = var.environment
+  delimiter   = var.delimiter
+  attributes  = var.attributes
+  tags        = var.tags
 }
 
 data "aws_iam_policy_document" "kms" {
@@ -39,14 +40,15 @@ data "aws_iam_policy_document" "kms" {
 }
 
 module "kms_key" {
-  source     = "git::https://github.com/cloudposse/terraform-aws-kms-key.git?ref=0.3.0"
-  enabled    = var.enabled
-  namespace  = var.namespace
-  name       = var.name
-  stage      = var.stage
-  delimiter  = var.delimiter
-  attributes = var.attributes
-  tags       = var.tags
+  source      = "git::https://github.com/cloudposse/terraform-aws-kms-key.git?ref=tags/0.4.0"
+  enabled     = var.enabled
+  namespace   = var.namespace
+  name        = var.name
+  stage       = var.stage
+  environment = var.environment
+  delimiter   = var.delimiter
+  attributes  = var.attributes
+  tags        = var.tags
 
   description             = "KMS key for VPC flow logs"
   deletion_window_in_days = 10
@@ -56,14 +58,15 @@ module "kms_key" {
 }
 
 module "s3_bucket" {
-  source     = "git::https://github.com/cloudposse/terraform-aws-s3-log-storage.git?ref=tags/0.6.0"
-  enabled    = var.enabled
-  namespace  = var.namespace
-  name       = var.name
-  stage      = var.stage
-  delimiter  = var.delimiter
-  attributes = var.attributes
-  tags       = var.tags
+  source      = "git::https://github.com/cloudposse/terraform-aws-s3-log-storage.git?ref=tags/0.7.0"
+  enabled     = var.enabled
+  namespace   = var.namespace
+  name        = var.name
+  stage       = var.stage
+  environment = var.environment
+  delimiter   = var.delimiter
+  attributes  = var.attributes
+  tags        = var.tags
 
   kms_master_key_arn = module.kms_key.alias_arn
   sse_algorithm      = "aws:kms"
