@@ -14,7 +14,7 @@ data "aws_caller_identity" "current" {}
 
 data "aws_iam_policy_document" "kms" {
   count = var.enabled ? 1 : 0
-  
+
   statement {
     sid    = "Enable IAM User Permissions"
     effect = "Allow"
