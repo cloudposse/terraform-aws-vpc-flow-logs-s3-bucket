@@ -21,7 +21,7 @@
 | standard_transition_days | Number of days to persist in the standard storage tier before moving to the infrequent access tier | number | `30` | no |
 | tags | Additional tags (e.g. `map('BusinessUnit','XYZ')` | map(string) | `<map>` | no |
 | traffic_type | The type of traffic to capture. Valid values: `ACCEPT`, `REJECT`, `ALL` | string | `ALL` | no |
-| vpc_id | VPC ID the DB instance will be created in | string | - | yes |
+| vpc_id | VPC ID to create flow logs for | string | - | yes |
 
 ## Outputs
 
