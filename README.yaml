@@ -1,4 +1,3 @@
----
 #
 # This is the canonical configuration for the `README.md`
 # Run `make readme` to rebuild the `README.md`
@@ -6,28 +5,21 @@
 
 # Name of this project
 name: terraform-aws-vpc-flow-logs-s3-bucket
-
 # Logo for this project
 #logo: docs/logo.png
 
 # License of this project
 license: "APACHE2"
-
 # Canonical GitHub repo
 github_repo: cloudposse/terraform-aws-vpc-flow-logs-s3-bucket
-
 # Badges to display
 badges:
-  - name: "Codefresh Build Status"
-    image: "https://g.codefresh.io/api/badges/pipeline/cloudposse/terraform-modules%2Fterraform-aws-vpc-flow-logs-s3-bucket?type=cf-1"
-    url: "https://g.codefresh.io/public/accounts/cloudposse/pipelines/5dd5b4de7ede02af6fdef50b"
   - name: "Latest Release"
     image: "https://img.shields.io/github/release/cloudposse/terraform-aws-vpc-flow-logs-s3-bucket.svg"
     url: "https://github.com/cloudposse/terraform-aws-vpc-flow-logs-s3-bucket/releases/latest"
   - name: "Slack Community"
     image: "https://slack.cloudposse.com/badge.svg"
     url: "https://slack.cloudposse.com"
-
 related:
   - name: "terraform-aws-vpc"
     description: "Terraform Module that defines a VPC with public/private subnets across multiple AZs with Internet Gateways"
@@ -35,18 +27,15 @@ related:
   - name: "CIS AWS Foundations Benchmark in the AWS Cloud"
     description: "CIS Benchmarks are consensus-based configuration guidelines developed by experts in US government, business, industry, and academia to help organizations assess and improve security"
     url: "https://github.com/aws-quickstart/quickstart-compliance-cis-benchmark"
-
 # Short description of this project
 description: |-
   Terraform module to create AWS [`VPC Flow logs`](https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html) backed by S3.
-
 introduction: |-
   The module will create:
 
   * KMS key
   * S3 bucket with server side encryption by the key
   * VPC flow logs backed by the S3 bucket
-
 # How to use this project
 usage: |-
   ```hcl
@@ -69,11 +58,9 @@ usage: |-
       vpc_id = module.vpc.vpc_id
     }
   ```
-
 include:
   - "docs/targets.md"
   - "docs/terraform.md"
-
 # Contributors to this project
 contributors:
   - name: "Igor Rodionov"
