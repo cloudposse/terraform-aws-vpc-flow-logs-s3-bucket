@@ -39,13 +39,10 @@ func TestExamplesComplete(t *testing.T) {
 
 	terraform.OutputAll(t, terraformOptions)
 
-	varNamespace := terraformOptions.Vars["namespace"]
-	varStage := terraformOptions.Vars["stage"]
-	varName := terraformOptions.Vars["name"]
 	// Assume '-' delimiter
 
 	bucketArn := terraform.Output(t, terraformOptions, "bucket_arn")
-	expectedBucketArn := fmt.Sprintf("arn:aws:s3:::%s-%s-%s", varNamespace, varStage, varName)
+	expectedBucketArn := fmt.Sprintf("arn:aws:s3:::%s-%s-%s", "example", "development", "flowlogs")
 
 	assert.Equal(t, bucketArn, expectedBucketArn)
 	assert.Empty(t, terraform.Output(t, terraformOptions, "bucket_prefix"))
