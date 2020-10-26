@@ -1,4 +1,4 @@
-module github.com/cloudposse/terraform-aws-cloudtrail-cloudwatch-alarms
+module github.com/cloudposse/terraform-aws-vpc-flow-logs-s3
 
 go 1.15
 
