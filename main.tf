@@ -24,6 +24,7 @@ data "aws_iam_policy_document" "kms" {
       "kms:Get*",
       "kms:Delete*",
       "kms:Tag*",
+      "kms:Untag*",
       "kms:ScheduleKeyDeletion",
       "kms:CancelKeyDeletion"
     ]
