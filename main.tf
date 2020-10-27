@@ -1,19 +1,12 @@
 module "label" {
   source      = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.19.2"
-  enabled     = var.enabled
-  namespace   = var.namespace
-  name        = var.name
-  stage       = var.stage
-  environment = var.environment
-  delimiter   = var.delimiter
-  attributes  = var.attributes
-  tags        = var.tags
+  context = module.this.context
 }
 
 data "aws_caller_identity" "current" {}
 
 data "aws_iam_policy_document" "kms" {
-  count = var.enabled ? 1 : 0
+  count = var.enabled == true ? 1 : 0
 
   statement {
     sid    = "Enable IAM User Permissions"
@@ -75,14 +68,7 @@ data "aws_iam_policy_document" "kms" {
 
 module "kms_key" {
   source      = "git::https://github.com/cloudposse/terraform-aws-kms-key.git?ref=tags/0.7.0"
-  enabled     = var.enabled
-  namespace   = var.namespace
-  name        = var.name
-  stage       = var.stage
-  environment = var.environment
-  delimiter   = var.delimiter
-  attributes  = var.attributes
-  tags        = var.tags
+  context = module.this.context
 
   description             = "KMS key for VPC flow logs"
   deletion_window_in_days = 10
@@ -93,14 +79,7 @@ module "kms_key" {
 
 module "s3_bucket" {
   source      = "git::https://github.com/cloudposse/terraform-aws-s3-log-storage.git?ref=tags/0.14.0"
-  enabled     = var.enabled
-  namespace   = var.namespace
-  name        = var.name
-  stage       = var.stage
-  environment = var.environment
-  delimiter   = var.delimiter
-  attributes  = var.attributes
-  tags        = var.tags
+  context = module.this.context
 
   kms_master_key_arn = module.kms_key.alias_arn
   sse_algorithm      = "aws:kms"
@@ -120,7 +99,7 @@ module "s3_bucket" {
 }
 
 resource "aws_flow_log" "default" {
-  count                = var.enabled ? 1 : 0
+  count                = var.enabled == true ? 1 : 0
   log_destination      = module.s3_bucket.bucket_arn
   log_destination_type = "s3"
   traffic_type         = var.traffic_type

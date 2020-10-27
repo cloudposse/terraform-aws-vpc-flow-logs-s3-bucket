@@ -15,12 +15,7 @@ module "vpc" {
 module "flow_logs" {
   source = "../../"
 
-  enabled = module.this.enabled
-
-  namespace = module.this.namespace
-  stage     = module.this.stage
-  name      = module.this.name
-
+  context = module.this.context
   region = var.region
   vpc_id = module.vpc.vpc_id
 

@@ -5,6 +5,7 @@ import (
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"
 	"math/rand"
+	"regexp"
 	"strconv"
 	"testing"
 	"time"
@@ -37,13 +38,11 @@ func TestExamplesComplete(t *testing.T) {
 	// This will run `terraform init` and `terraform apply` and fail the test if there are any errors
 	terraform.InitAndApplyAndIdempotent(t, terraformOptions)
 
-	terraform.OutputAll(t, terraformOptions)
-
 	// Assume '-' delimiter
-
 	bucketArn := terraform.Output(t, terraformOptions, "bucket_arn")
-	expectedBucketArn := fmt.Sprintf("arn:aws:s3:::%s-%s-%s", "example", "development", "flowlogs")
+	bucketArnRegexp := fmt.Sprintf("arn:aws:s3:::%s-%s-%s-[0-9]{5}", "example", "development", "flowlogs")
 
-	assert.Equal(t, bucketArn, expectedBucketArn)
+	assert.Regexp(t, regexp.MustCompile(bucketArnRegexp), bucketArn)
+	//assert.Equal(t, bucketArn, bucketArnRegexp)
 	assert.Empty(t, terraform.Output(t, terraformOptions, "bucket_prefix"))
 }
