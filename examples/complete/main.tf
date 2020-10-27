@@ -16,8 +16,8 @@ module "flow_logs" {
   source = "../../"
 
   context = module.this.context
-  region = var.region
-  vpc_id = module.vpc.vpc_id
+  region  = var.region
+  vpc_id  = module.vpc.vpc_id
 
   // For testing
   force_destroy = true

@@ -1,5 +1,5 @@
 module "label" {
-  source      = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.19.2"
+  source  = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.19.2"
   context = module.this.context
 }
 
@@ -67,7 +67,7 @@ data "aws_iam_policy_document" "kms" {
 }
 
 module "kms_key" {
-  source      = "git::https://github.com/cloudposse/terraform-aws-kms-key.git?ref=tags/0.7.0"
+  source  = "git::https://github.com/cloudposse/terraform-aws-kms-key.git?ref=tags/0.7.0"
   context = module.this.context
 
   description             = "KMS key for VPC flow logs"
@@ -78,7 +78,7 @@ module "kms_key" {
 }
 
 module "s3_bucket" {
-  source      = "git::https://github.com/cloudposse/terraform-aws-s3-log-storage.git?ref=tags/0.14.0"
+  source  = "git::https://github.com/cloudposse/terraform-aws-s3-log-storage.git?ref=tags/0.14.0"
   context = module.this.context
 
   kms_master_key_arn = module.kms_key.alias_arn
