@@ -1,11 +1,9 @@
 package test
 
 import (
-	"fmt"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"
 	"math/rand"
-	"regexp"
 	"strconv"
 	"testing"
 	"time"
@@ -39,8 +37,7 @@ func TestExamplesComplete(t *testing.T) {
 
 	// Assume '-' delimiter
 	bucketArn := terraform.Output(t, terraformOptions, "bucket_arn")
-	bucketArnRegexp := fmt.Sprintf("arn:aws:s3:::%s-%s-%s-[0-9]{5}", "eg", "test", "flowlogs")
-	assert.Regexp(t, regexp.MustCompile(bucketArnRegexp), bucketArn)
+	assert.Equal(t, "arn:aws:s3:::eg-test-flowlogs-"+randId, bucketArn)
 
 	flowLogId := terraform.Output(t, terraformOptions, "flow_log_id")
 	assert.NotEmpty(t, flowLogId)
