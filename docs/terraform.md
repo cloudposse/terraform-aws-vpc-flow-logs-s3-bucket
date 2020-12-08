@@ -43,7 +43,7 @@
 | standard\_transition\_days | Number of days to persist in the standard storage tier before moving to the infrequent access tier | `number` | `30` | no |
 | tags | Additional tags (e.g. `map('BusinessUnit','XYZ')` | `map(string)` | `{}` | no |
 | traffic\_type | The type of traffic to capture. Valid values: `ACCEPT`, `REJECT`, `ALL` | `string` | `"ALL"` | no |
-| vpc\_id | VPC ID to create flow logs for | `string` | n/a | yes |
+| vpc\_id | VPC ID to create flow logs for | `string` | `null` | no |
 
 ## Outputs
 

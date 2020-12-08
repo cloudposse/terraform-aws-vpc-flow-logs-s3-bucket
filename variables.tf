@@ -1,6 +1,7 @@
 variable "vpc_id" {
   type        = string
   description = "VPC ID to create flow logs for"
+  default     = null
 }
 
 variable "lifecycle_prefix" {
