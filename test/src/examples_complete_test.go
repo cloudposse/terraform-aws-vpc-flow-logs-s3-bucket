@@ -28,7 +28,6 @@ func TestExamplesComplete(t *testing.T) {
 		VarFiles: []string{"fixtures.us-east-2.tfvars"},
 		Vars: map[string]interface{}{
 			"attributes": attributes,
-			"region": "us-east-2",
 		},
 	}
 
@@ -40,9 +39,12 @@ func TestExamplesComplete(t *testing.T) {
 
 	// Assume '-' delimiter
 	bucketArn := terraform.Output(t, terraformOptions, "bucket_arn")
-	bucketArnRegexp := fmt.Sprintf("arn:aws:s3:::%s-%s-%s-[0-9]{5}", "example", "development", "flowlogs")
-
+	bucketArnRegexp := fmt.Sprintf("arn:aws:s3:::%s-%s-%s-[0-9]{5}", "eg", "test", "flowlogs")
 	assert.Regexp(t, regexp.MustCompile(bucketArnRegexp), bucketArn)
-	//assert.Equal(t, bucketArn, bucketArnRegexp)
-	assert.Empty(t, terraform.Output(t, terraformOptions, "bucket_prefix"))
+
+	flowLogId := terraform.Output(t, terraformOptions, "flow_log_id")
+	assert.NotEmpty(t, flowLogId)
+
+	flowLogArn := terraform.Output(t, terraformOptions, "flow_log_arn")
+	assert.Contains(t, flowLogArn, flowLogId)
 }

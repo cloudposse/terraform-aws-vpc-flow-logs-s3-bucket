@@ -1,5 +1,7 @@
 region = "us-east-2"
 
-namespace = "example"
-stage     = "development"
-name      = "flowlogs"
+namespace = "eg"
+
+stage = "test"
+
+name = "flowlogs"

@@ -1,6 +1,8 @@
+<!-- markdownlint-disable -->
 # terraform-aws-vpc-flow-logs-s3-bucket
 
  [![Latest Release](https://img.shields.io/github/release/cloudposse/terraform-aws-vpc-flow-logs-s3-bucket.svg)](https://github.com/cloudposse/terraform-aws-vpc-flow-logs-s3-bucket/releases/latest) [![Slack Community](https://slack.cloudposse.com/badge.svg)](https://slack.cloudposse.com)
+<!-- markdownlint-restore -->
 
 [![README Header][readme_header_img]][readme_header_link]
 
@@ -64,9 +66,9 @@ We literally have [*hundreds of terraform modules*][terraform_modules] that are 
 
 The module will create:
 
-* KMS key
-* S3 bucket with server side encryption by the key
-* VPC flow logs backed by the S3 bucket
+* S3 bucket with server side encryption
+* KMS key to encrypt flow logs files in the bucket
+* Optional VPC Flow Log backed by the S3 bucket (this can be disabled, e.g. in multi-account environments if you want to create an S3 bucket in one account and VPC Flow Logs in different accounts)
 
 ## Usage
 
@@ -79,8 +81,8 @@ Instead pin to the release tag (e.g. `?ref=tags/x.y.z`) of one of our [latest re
   module "vpc" {
     source     = "git::https://github.com/cloudposse/terraform-aws-vpc.git?ref=master"
     namespace  = "eg"
-    stage      = "prod"
-    name       = "flow"
+    stage      = "test"
+    name       = "flowlogs"
     cidr_block = "172.16.0.0/16"
   }
 
@@ -88,10 +90,9 @@ Instead pin to the release tag (e.g. `?ref=tags/x.y.z`) of one of our [latest re
     source = "git::https://github.com/cloudposse/terraform-aws-vpc-flow-logs-s3-bucket.git?ref=master"
 
     namespace  = "eg"
-    stage      = "prod"
-    name       = "flow"
+    stage      = "test"
+    name       = "flowlogs"
 
-    region = "us-west-2"
     vpc_id = module.vpc.vpc_id
   }
 ```
@@ -119,27 +120,29 @@ Available targets:
 | Name | Version |
 |------|---------|
 | terraform | >= 0.12.0 |
-| aws | >= 2.0 |
+| http | >= 2.0 |
 | local | >= 1.3 |
-| template | >= 2.0 |
+| template | >= 2.2 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| aws | >= 2.0 |
+| aws | n/a |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | additional\_tag\_map | Additional tags for appending to tags\_as\_list\_of\_maps. Not added to `tags`. | `map(string)` | `{}` | no |
+| arn\_format | ARN format to be used. May be changed to support deployment in GovCloud/China regions | `string` | `"arn:aws"` | no |
 | attributes | Additional attributes (e.g. `1`) | `list(string)` | `[]` | no |
 | context | Single object for setting entire context at once.<br>See description of individual variables for details.<br>Leave string and numeric variables as `null` to use default value.<br>Individual variable settings (non-null) override settings in context object,<br>except for attributes, tags, and additional\_tag\_map, which are merged. | <pre>object({<br>    enabled             = bool<br>    namespace           = string<br>    environment         = string<br>    stage               = string<br>    name                = string<br>    delimiter           = string<br>    attributes          = list(string)<br>    tags                = map(string)<br>    additional_tag_map  = map(string)<br>    regex_replace_chars = string<br>    label_order         = list(string)<br>    id_length_limit     = number<br>  })</pre> | <pre>{<br>  "additional_tag_map": {},<br>  "attributes": [],<br>  "delimiter": null,<br>  "enabled": true,<br>  "environment": null,<br>  "id_length_limit": null,<br>  "label_order": [],<br>  "name": null,<br>  "namespace": null,<br>  "regex_replace_chars": null,<br>  "stage": null,<br>  "tags": {}<br>}</pre> | no |
 | delimiter | Delimiter to be used between `namespace`, `environment`, `stage`, `name` and `attributes`.<br>Defaults to `-` (hyphen). Set to `""` to use no delimiter at all. | `string` | `null` | no |
 | enabled | Set to false to prevent the module from creating any resources | `bool` | `null` | no |
 | environment | Environment, e.g. 'uw2', 'us-west-2', OR 'prod', 'staging', 'dev', 'UAT' | `string` | `null` | no |
 | expiration\_days | Number of days after which to expunge the objects | `number` | `90` | no |
+| flow\_log\_enabled | Enable/disable the Flow Log creation. Useful in multi-account environments where the bucket is in one account, but VPC Flow Logs are in different accounts | `bool` | `true` | no |
 | force\_destroy | A boolean that indicates all objects should be deleted from the bucket so that the bucket can be destroyed without error. These objects are not recoverable | `bool` | `false` | no |
 | glacier\_transition\_days | Number of days after which to move the data to the glacier storage tier | `number` | `60` | no |
 | id\_length\_limit | Limit `id` to this many characters.<br>Set to `0` for unlimited length.<br>Set to `null` for default, which is `0`.<br>Does not affect `id_full`. | `number` | `null` | no |
@@ -152,7 +155,6 @@ Available targets:
 | noncurrent\_version\_expiration\_days | Specifies when noncurrent object versions expire | `number` | `90` | no |
 | noncurrent\_version\_transition\_days | Specifies when noncurrent object versions transitions | `number` | `30` | no |
 | regex\_replace\_chars | Regex to replace chars with empty string in `namespace`, `environment`, `stage` and `name`.<br>If not set, `"/[^a-zA-Z0-9-]/"` is used to remove all characters other than hyphens, letters and digits. | `string` | `null` | no |
-| region | If specified, the AWS region this bucket should reside in. Otherwise, the region used by the callee | `string` | `""` | no |
 | stage | Stage, e.g. 'prod', 'staging', 'dev', OR 'source', 'build', 'test', 'deploy', 'release' | `string` | `null` | no |
 | standard\_transition\_days | Number of days to persist in the standard storage tier before moving to the infrequent access tier | `number` | `30` | no |
 | tags | Additional tags (e.g. `map('BusinessUnit','XYZ')` | `map(string)` | `{}` | no |
@@ -167,7 +169,8 @@ Available targets:
 | bucket\_domain\_name | FQDN of bucket |
 | bucket\_id | Bucket Name (aka ID) |
 | bucket\_prefix | Bucket prefix configured for lifecycle rules |
-| id | The Flow Log ID |
+| flow\_log\_arn | Flow Log ARN |
+| flow\_log\_id | Flow Log ID |
 | kms\_alias\_arn | KMS Alias ARN |
 | kms\_alias\_name | KMS Alias name |
 | kms\_key\_arn | KMS Key ARN |
@@ -321,8 +324,10 @@ Check out [our other projects][github], [follow us on twitter][twitter], [apply 
 
 ### Contributors
 
+<!-- markdownlint-disable -->
 |  [![Igor Rodionov][goruha_avatar]][goruha_homepage]<br/>[Igor Rodionov][goruha_homepage] | [![Erik Osterman][osterman_avatar]][osterman_homepage]<br/>[Erik Osterman][osterman_homepage] | [![Andriy Knysh][aknysh_avatar]][aknysh_homepage]<br/>[Andriy Knysh][aknysh_homepage] |
 |---|---|---|
+<!-- markdownlint-restore -->
 
   [goruha_homepage]: https://github.com/goruha
   [goruha_avatar]: https://img.cloudposse.com/150x150/https://github.com/goruha.png

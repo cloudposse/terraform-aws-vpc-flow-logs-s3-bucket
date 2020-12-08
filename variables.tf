@@ -15,12 +15,6 @@ variable "lifecycle_tags" {
   default     = {}
 }
 
-variable "region" {
-  type        = string
-  description = "If specified, the AWS region this bucket should reside in. Otherwise, the region used by the callee"
-  default     = ""
-}
-
 variable "force_destroy" {
   type        = bool
   description = "A boolean that indicates all objects should be deleted from the bucket so that the bucket can be destroyed without error. These objects are not recoverable"
@@ -67,4 +61,16 @@ variable "traffic_type" {
   type        = string
   description = "The type of traffic to capture. Valid values: `ACCEPT`, `REJECT`, `ALL`"
   default     = "ALL"
+}
+
+variable "arn_format" {
+  type        = string
+  default     = "arn:aws"
+  description = "ARN format to be used. May be changed to support deployment in GovCloud/China regions"
+}
+
+variable "flow_log_enabled" {
+  type        = bool
+  default     = true
+  description = "Enable/disable the Flow Log creation. Useful in multi-account environments where the bucket is in one account, but VPC Flow Logs are in different accounts"
 }

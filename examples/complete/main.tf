@@ -3,22 +3,31 @@ provider "aws" {
 }
 
 module "vpc" {
-  // https://github.com/cloudposse/terraform-aws-vpc
-  source     = "git::https://github.com/cloudposse/terraform-aws-vpc.git?ref=0.17.0"
-  enabled    = module.this.enabled
-  namespace  = module.this.namespace
-  stage      = module.this.stage
-  name       = module.this.name
+  source  = "cloudposse/vpc/aws"
+  version = "0.18.0"
+
   cidr_block = "172.16.0.0/16"
+
+  context = module.this.context
 }
 
 module "flow_logs" {
   source = "../../"
 
-  context = module.this.context
-  region  = var.region
-  vpc_id  = module.vpc.vpc_id
+  arn_format                         = var.arn_format
+  flow_log_enabled                   = var.flow_log_enabled
+  lifecycle_prefix                   = var.lifecycle_prefix
+  lifecycle_rule_enabled             = var.lifecycle_rule_enabled
+  noncurrent_version_expiration_days = var.noncurrent_version_expiration_days
+  noncurrent_version_transition_days = var.noncurrent_version_transition_days
+  standard_transition_days           = var.standard_transition_days
+  glacier_transition_days            = var.glacier_transition_days
+  expiration_days                    = var.expiration_days
+  traffic_type                       = var.traffic_type
+  vpc_id                             = module.vpc.vpc_id
 
   // For testing
   force_destroy = true
+
+  context = module.this.context
 }

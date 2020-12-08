@@ -10,8 +10,10 @@ name: terraform-aws-vpc-flow-logs-s3-bucket
 
 # License of this project
 license: "APACHE2"
+
 # Canonical GitHub repo
 github_repo: cloudposse/terraform-aws-vpc-flow-logs-s3-bucket
+
 # Badges to display
 badges:
   - name: "Latest Release"
@@ -20,6 +22,7 @@ badges:
   - name: "Slack Community"
     image: "https://slack.cloudposse.com/badge.svg"
     url: "https://slack.cloudposse.com"
+
 related:
   - name: "terraform-aws-vpc"
     description: "Terraform Module that defines a VPC with public/private subnets across multiple AZs with Internet Gateways"
@@ -27,23 +30,26 @@ related:
   - name: "CIS AWS Foundations Benchmark in the AWS Cloud"
     description: "CIS Benchmarks are consensus-based configuration guidelines developed by experts in US government, business, industry, and academia to help organizations assess and improve security"
     url: "https://github.com/aws-quickstart/quickstart-compliance-cis-benchmark"
+
 # Short description of this project
 description: |-
   Terraform module to create AWS [`VPC Flow logs`](https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html) backed by S3.
+
 introduction: |-
   The module will create:
 
-  * KMS key
-  * S3 bucket with server side encryption by the key
-  * VPC flow logs backed by the S3 bucket
+  * S3 bucket with server side encryption
+  * KMS key to encrypt flow logs files in the bucket
+  * Optional VPC Flow Log backed by the S3 bucket (this can be disabled, e.g. in multi-account environments if you want to create an S3 bucket in one account and VPC Flow Logs in different accounts)
+
 # How to use this project
 usage: |-
   ```hcl
     module "vpc" {
       source     = "git::https://github.com/cloudposse/terraform-aws-vpc.git?ref=master"
       namespace  = "eg"
-      stage      = "prod"
-      name       = "flow"
+      stage      = "test"
+      name       = "flowlogs"
       cidr_block = "172.16.0.0/16"
     }
 
@@ -51,16 +57,17 @@ usage: |-
       source = "git::https://github.com/cloudposse/terraform-aws-vpc-flow-logs-s3-bucket.git?ref=master"
 
       namespace  = "eg"
-      stage      = "prod"
-      name       = "flow"
+      stage      = "test"
+      name       = "flowlogs"
 
-      region = "us-west-2"
       vpc_id = module.vpc.vpc_id
     }
   ```
+
 include:
   - "docs/targets.md"
   - "docs/terraform.md"
+
 # Contributors to this project
 contributors:
   - name: "Igor Rodionov"
