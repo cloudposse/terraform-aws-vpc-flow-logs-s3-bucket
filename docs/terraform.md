@@ -4,7 +4,7 @@
 | Name | Version |
 |------|---------|
 | terraform | >= 0.12.0 |
-| http | >= 2.0 |
+| aws | >= 2.0 |
 | local | >= 1.3 |
 | template | >= 2.2 |
 
@@ -12,7 +12,7 @@
 
 | Name | Version |
 |------|---------|
-| aws | n/a |
+| aws | >= 2.0 |
 
 ## Inputs
 

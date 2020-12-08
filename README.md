@@ -77,9 +77,17 @@ The module will create:
 Instead pin to the release tag (e.g. `?ref=tags/x.y.z`) of one of our [latest releases](https://github.com/cloudposse/terraform-aws-vpc-flow-logs-s3-bucket/releases).
 
 
+For a complete example, see [examples/complete](examples/complete).
+
+For automated tests of the complete example using [bats](https://github.com/bats-core/bats-core) and [Terratest](https://github.com/gruntwork-io/terratest)
+(which tests and deploys the example on Datadog), see [test](test).
+
+
 ```hcl
   module "vpc" {
-    source     = "git::https://github.com/cloudposse/terraform-aws-vpc.git?ref=master"
+    source  = "cloudposse/vpc/aws"
+    version = "0.18.0"
+
     namespace  = "eg"
     stage      = "test"
     name       = "flowlogs"
@@ -87,7 +95,8 @@ Instead pin to the release tag (e.g. `?ref=tags/x.y.z`) of one of our [latest re
   }
 
   module "flow_logs" {
-    source = "git::https://github.com/cloudposse/terraform-aws-vpc-flow-logs-s3-bucket.git?ref=master"
+    source  = "cloudposse/vpc-flow-logs-s3-bucket/aws"
+    version = "0.8.0"
 
     namespace  = "eg"
     stage      = "test"
@@ -120,7 +129,7 @@ Available targets:
 | Name | Version |
 |------|---------|
 | terraform | >= 0.12.0 |
-| http | >= 2.0 |
+| aws | >= 2.0 |
 | local | >= 1.3 |
 | template | >= 2.2 |
 
@@ -128,7 +137,7 @@ Available targets:
 
 | Name | Version |
 |------|---------|
-| aws | n/a |
+| aws | >= 2.0 |
 
 ## Inputs
 

@@ -10,8 +10,8 @@ terraform {
       source  = "hashicorp/template"
       version = ">= 2.2"
     }
-    http = {
-      source  = "hashicorp/http"
+    aws = {
+      source  = "hashicorp/aws"
       version = ">= 2.0"
     }
   }
