@@ -26,7 +26,7 @@ module "flow_logs" {
   traffic_type                       = var.traffic_type
   vpc_id                             = module.vpc.vpc_id
 
-  // For testing
+  # For testing
   force_destroy = true
 
   context = module.this.context
