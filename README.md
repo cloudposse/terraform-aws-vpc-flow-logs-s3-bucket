@@ -165,6 +165,22 @@ Available targets:
 |------|---------|
 | aws | >= 2.0 |
 
+## Modules
+
+| Name | Source | Version |
+|------|--------|---------|
+| kms_key | cloudposse/kms-key/aws | 0.9.1 |
+| s3_log_storage_bucket | cloudposse/s3-log-storage/aws | 0.20.0 |
+| this | cloudposse/label/null | 0.24.1 |
+
+## Resources
+
+| Name |
+|------|
+| [aws_caller_identity](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) |
+| [aws_flow_log](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/flow_log) |
+| [aws_iam_policy_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) |
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |
@@ -212,7 +228,6 @@ Available targets:
 | kms\_alias\_name | KMS Alias name |
 | kms\_key\_arn | KMS Key ARN |
 | kms\_key\_id | KMS Key ID |
-
 <!-- markdownlint-restore -->
 
 
