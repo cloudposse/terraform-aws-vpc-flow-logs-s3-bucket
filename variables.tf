@@ -1,6 +1,7 @@
 variable "vpc_id" {
   type        = string
   description = "VPC ID to create flow logs for"
+  default     = null
 }
 
 variable "lifecycle_prefix" {
@@ -13,12 +14,6 @@ variable "lifecycle_tags" {
   type        = map(string)
   description = "Tags filter. Used to manage object lifecycle events"
   default     = {}
-}
-
-variable "region" {
-  type        = string
-  description = "If specified, the AWS region this bucket should reside in. Otherwise, the region used by the callee"
-  default     = ""
 }
 
 variable "force_destroy" {
@@ -73,4 +68,15 @@ variable "allow_ssl_requests_only" {
   type        = bool
   default     = false
   description = "Set to `true` to require requests to use Secure Socket Layer (HTTPS/SSL). This will explicitly deny access to HTTP requests"
+
+variable "arn_format" {
+  type        = string
+  default     = "arn:aws"
+  description = "ARN format to be used. May be changed to support deployment in GovCloud/China regions"
+}
+
+variable "flow_log_enabled" {
+  type        = bool
+  default     = true
+  description = "Enable/disable the Flow Log creation. Useful in multi-account environments where the bucket is in one account, but VPC Flow Logs are in different accounts"
 }

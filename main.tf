@@ -1,15 +1,10 @@
-module "label" {
-  source  = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.19.2"
-  context = module.this.context
-}
-
 data "aws_caller_identity" "current" {}
 
 data "aws_iam_policy_document" "kms" {
-  count = module.this.enabled == true ? 1 : 0
+  count = module.this.enabled ? 1 : 0
 
   statement {
-    sid    = "Enable IAM User Permissions"
+    sid    = "Enable Root User Permissions"
     effect = "Allow"
 
     actions = [
@@ -68,26 +63,73 @@ data "aws_iam_policy_document" "kms" {
   }
 }
 
-module "kms_key" {
-  source  = "git::https://github.com/cloudposse/terraform-aws-kms-key.git?ref=tags/0.7.0"
-  context = module.this.context
+# https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-s3.html
+data "aws_iam_policy_document" "bucket" {
+  count = module.this.enabled ? 1 : 0
 
-  description             = "KMS key for VPC flow logs"
-  deletion_window_in_days = 10
-  enable_key_rotation     = true
+  statement {
+    sid = "AWSLogDeliveryWrite"
 
-  policy = join("", data.aws_iam_policy_document.kms.*.json)
+    principals {
+      type        = "Service"
+      identifiers = ["delivery.logs.amazonaws.com"]
+    }
+
+    actions = [
+      "s3:PutObject"
+    ]
+
+    resources = [
+      "${var.arn_format}:s3:::${module.this.id}/*"
+    ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "s3:x-amz-acl"
+
+      values = [
+        "bucket-owner-full-control"
+      ]
+    }
+  }
+
+  statement {
+    sid = "AWSLogDeliveryAclCheck"
+
+    principals {
+      type        = "Service"
+      identifiers = ["delivery.logs.amazonaws.com"]
+    }
+
+    actions = [
+      "s3:GetBucketAcl"
+    ]
+
+    resources = [
+      "${var.arn_format}:s3:::${module.this.id}"
+    ]
+  }
 }
 
-module "s3_bucket" {
-  source  = "git::https://github.com/cloudposse/terraform-aws-s3-log-storage.git?ref=tags/0.14.0"
+module "kms_key" {
+  source  = "cloudposse/kms-key/aws"
+  version = "0.9.0"
+
+  description             = "KMS key for VPC Flow Logs"
+  deletion_window_in_days = 10
+  enable_key_rotation     = true
+  policy                  = join("", data.aws_iam_policy_document.kms.*.json)
+
   context = module.this.context
+}
 
-  kms_master_key_arn = module.kms_key.alias_arn
-  sse_algorithm      = "aws:kms"
+module "s3_log_storage_bucket" {
+  source  = "cloudposse/s3-log-storage/aws"
+  version = "0.20.0"
 
-  versioning_enabled = false
-
+  kms_master_key_arn                 = module.kms_key.alias_arn
+  sse_algorithm                      = "aws:kms"
+  versioning_enabled                 = false
   expiration_days                    = var.expiration_days
   glacier_transition_days            = var.glacier_transition_days
   lifecycle_prefix                   = var.lifecycle_prefix
@@ -97,13 +139,15 @@ module "s3_bucket" {
   noncurrent_version_transition_days = var.noncurrent_version_transition_days
   standard_transition_days           = var.standard_transition_days
   allow_ssl_requests_only            = var.allow_ssl_requests_only
+  force_destroy                      = var.force_destroy
+  policy                             = join("", data.aws_iam_policy_document.bucket.*.json)
 
-  force_destroy = var.force_destroy
+  context = module.this.context
 }
 
 resource "aws_flow_log" "default" {
-  count                = module.this.enabled == true ? 1 : 0
-  log_destination      = module.s3_bucket.bucket_arn
+  count                = module.this.enabled && var.flow_log_enabled ? 1 : 0
+  log_destination      = module.s3_log_storage_bucket.bucket_arn
   log_destination_type = "s3"
   traffic_type         = var.traffic_type
   vpc_id               = var.vpc_id
