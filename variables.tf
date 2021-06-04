@@ -68,3 +68,9 @@ variable "traffic_type" {
   description = "The type of traffic to capture. Valid values: `ACCEPT`, `REJECT`, `ALL`"
   default     = "ALL"
 }
+
+variable "allow_ssl_requests_only" {
+  type        = bool
+  default     = false
+  description = "Set to `true` to require requests to use Secure Socket Layer (HTTPS/SSL). This will explicitly deny access to HTTP requests"
+}

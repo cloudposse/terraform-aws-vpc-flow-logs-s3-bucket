@@ -96,6 +96,7 @@ module "s3_bucket" {
   noncurrent_version_expiration_days = var.noncurrent_version_expiration_days
   noncurrent_version_transition_days = var.noncurrent_version_transition_days
   standard_transition_days           = var.standard_transition_days
+  allow_ssl_requests_only            = var.allow_ssl_requests_only
 
   force_destroy = var.force_destroy
 }
