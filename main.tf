@@ -125,7 +125,7 @@ module "kms_key" {
 
 module "s3_log_storage_bucket" {
   source  = "cloudposse/s3-log-storage/aws"
-  version = "0.20.0"
+  version = "0.23.0"
 
   kms_master_key_arn                 = module.kms_key.alias_arn
   sse_algorithm                      = "aws:kms"
@@ -138,6 +138,7 @@ module "s3_log_storage_bucket" {
   noncurrent_version_expiration_days = var.noncurrent_version_expiration_days
   noncurrent_version_transition_days = var.noncurrent_version_transition_days
   standard_transition_days           = var.standard_transition_days
+  allow_ssl_requests_only            = var.allow_ssl_requests_only
   force_destroy                      = var.force_destroy
   policy                             = join("", data.aws_iam_policy_document.bucket.*.json)
 
