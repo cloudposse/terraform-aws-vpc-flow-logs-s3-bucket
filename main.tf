@@ -32,7 +32,7 @@ data "aws_iam_policy_document" "kms" {
       type = "AWS"
 
       identifiers = [
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        "arn:${var.arn_format}::${data.aws_caller_identity.current.account_id}:root"
       ]
     }
   }
