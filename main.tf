@@ -1,3 +1,9 @@
+locals {
+  arn_format = "arn:${data.aws_partition.current.partition}"
+}
+
+data "aws_partition" "current" {}
+
 data "aws_caller_identity" "current" {}
 
 data "aws_iam_policy_document" "kms" {
@@ -32,7 +38,7 @@ data "aws_iam_policy_document" "kms" {
       type = "AWS"
 
       identifiers = [
-        "${var.arn_format}:iam::${data.aws_caller_identity.current.account_id}:root"
+        "${local.arn_format}:iam::${data.aws_caller_identity.current.account_id}:root"
       ]
     }
   }
@@ -80,7 +86,7 @@ data "aws_iam_policy_document" "bucket" {
     ]
 
     resources = [
-      "${var.arn_format}:s3:::${module.this.id}/*"
+      "${local.arn_format}:s3:::${module.this.id}/*"
     ]
 
     condition {
@@ -106,7 +112,7 @@ data "aws_iam_policy_document" "bucket" {
     ]
 
     resources = [
-      "${var.arn_format}:s3:::${module.this.id}"
+      "${local.arn_format}:s3:::${module.this.id}"
     ]
   }
 }
