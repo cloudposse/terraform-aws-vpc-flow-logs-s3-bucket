@@ -114,9 +114,9 @@ data "aws_iam_policy_document" "bucket" {
     for_each = var.allow_ssl_requests_only ? [1] : []
 
     content {
-      sid       = "ForceSSLOnlyAccess"
-      effect    = "Deny"
-      actions   = ["s3:*"]
+      sid     = "ForceSSLOnlyAccess"
+      effect  = "Deny"
+      actions = ["s3:*"]
       resources = [
         "${var.arn_format}:s3:::${module.this.id}/*",
         "${var.arn_format}:s3:::${module.this.id}"
