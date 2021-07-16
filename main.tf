@@ -8,7 +8,22 @@ data "aws_iam_policy_document" "kms" {
     effect = "Allow"
 
     actions = [
-      "kms:*"
+      "kms:Create*",
+      "kms:Describe*",
+      "kms:Enable*",
+      "kms:List*",
+      "kms:Put*",
+      "kms:Update*",
+      "kms:Revoke*",
+      "kms:Disable*",
+      "kms:Get*",
+      "kms:Delete*",
+      "kms:Tag*",
+      "kms:Untag*",
+      "kms:ScheduleKeyDeletion",
+      "kms:CancelKeyDeletion",
+      "kms:Decrypt*",
+      "kms:GenerateDataKey*"
     ]
 
     resources = [
