@@ -14,7 +14,6 @@ module "vpc" {
 module "flow_logs" {
   source = "../../"
 
-  arn_format                         = var.arn_format
   flow_log_enabled                   = var.flow_log_enabled
   lifecycle_prefix                   = var.lifecycle_prefix
   lifecycle_rule_enabled             = var.lifecycle_rule_enabled
