@@ -117,6 +117,31 @@ data "aws_iam_policy_document" "bucket" {
       "${local.arn_format}:s3:::${module.this.id}"
     ]
   }
+
+  dynamic "statement" {
+    for_each = var.allow_ssl_requests_only ? [1] : []
+
+    content {
+      sid     = "ForceSSLOnlyAccess"
+      effect  = "Deny"
+      actions = ["s3:*"]
+      resources = [
+        "${var.arn_format}:s3:::${module.this.id}/*",
+        "${var.arn_format}:s3:::${module.this.id}"
+      ]
+
+      principals {
+        identifiers = ["*"]
+        type        = "*"
+      }
+
+      condition {
+        test     = "Bool"
+        values   = ["false"]
+        variable = "aws:SecureTransport"
+      }
+    }
+  }
 }
 
 module "kms_key" {
@@ -146,7 +171,6 @@ module "s3_log_storage_bucket" {
   noncurrent_version_expiration_days = var.noncurrent_version_expiration_days
   noncurrent_version_transition_days = var.noncurrent_version_transition_days
   standard_transition_days           = var.standard_transition_days
-  allow_ssl_requests_only            = var.allow_ssl_requests_only
   force_destroy                      = var.force_destroy
   policy                             = join("", data.aws_iam_policy_document.bucket.*.json)
 
