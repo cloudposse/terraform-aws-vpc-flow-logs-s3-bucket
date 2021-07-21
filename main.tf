@@ -26,6 +26,8 @@ data "aws_iam_policy_document" "kms" {
       "kms:GenerateDataKey"
     ]
 
+    # bridgecrew:skip=CKV_AWS_109:This policy only applies to the key it is attached to
+    # bridgecrew:skip=CKV_AWS_111:This policy only applies to the key it is attached to
     resources = [
       "*"
     ]
