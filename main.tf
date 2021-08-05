@@ -9,7 +9,7 @@ data "aws_caller_identity" "current" {}
 data "aws_iam_policy_document" "kms" {
   count = module.this.enabled ? 1 : 0
 
-  source_policy_documents = var.custom_policy_json != "" ? [var.custom_policy_json] : []
+  source_json = var.source_json
 
   statement {
     sid    = "Enable Root User Permissions"
