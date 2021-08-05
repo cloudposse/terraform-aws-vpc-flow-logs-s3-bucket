@@ -30,8 +30,6 @@ data "aws_iam_policy_document" "kms" {
       "kms:Untag*",
       "kms:ScheduleKeyDeletion",
       "kms:CancelKeyDeletion",
-      "kms:Decrypt*",
-      "kms:GenerateDataKey*"
     ]
 
     resources = [
