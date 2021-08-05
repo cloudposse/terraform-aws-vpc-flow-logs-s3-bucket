@@ -75,3 +75,9 @@ variable "flow_log_enabled" {
   default     = true
   description = "Enable/disable the Flow Log creation. Useful in multi-account environments where the bucket is in one account, but VPC Flow Logs are in different accounts"
 }
+
+variable "custom_policy_json" {
+  type        = string
+  default     = ""
+  description = "Custom IAM policy document that can optionally be passed and merged with exported document"
+}
