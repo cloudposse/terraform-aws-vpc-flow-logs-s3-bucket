@@ -128,8 +128,8 @@ data "aws_iam_policy_document" "bucket" {
       effect  = "Deny"
       actions = ["s3:*"]
       resources = [
-        "${var.arn_format}:s3:::${module.this.id}/*",
-        "${var.arn_format}:s3:::${module.this.id}"
+        "${local.arn_format}:s3:::${module.this.id}/*",
+        "${local.arn_format}:s3:::${module.this.id}"
       ]
 
       principals {
