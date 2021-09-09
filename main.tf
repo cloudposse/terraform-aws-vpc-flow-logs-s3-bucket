@@ -148,7 +148,7 @@ data "aws_iam_policy_document" "bucket" {
 
 module "kms_key" {
   source  = "cloudposse/kms-key/aws"
-  version = "0.9.0"
+  version = "0.11.0"
 
   description             = "KMS key for VPC Flow Logs"
   deletion_window_in_days = 10
@@ -160,7 +160,7 @@ module "kms_key" {
 
 module "s3_log_storage_bucket" {
   source  = "cloudposse/s3-log-storage/aws"
-  version = "0.23.0"
+  version = "0.24.1"
 
   kms_master_key_arn                 = module.kms_key.alias_arn
   sse_algorithm                      = "aws:kms"
