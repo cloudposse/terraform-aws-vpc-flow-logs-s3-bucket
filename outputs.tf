@@ -47,3 +47,8 @@ output "flow_log_arn" {
   value       = join("", aws_flow_log.default.*.arn)
   description = "Flow Log ARN"
 }
+
+output "bucket_notifications_sqs_queue_arn" {
+  value       = module.s3_bucket.bucket_notifications_sqs_queue_arn
+  description = "Notifications SQS queue ARN"
+}

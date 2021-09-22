@@ -160,7 +160,7 @@ module "kms_key" {
 
 module "s3_log_storage_bucket" {
   source  = "cloudposse/s3-log-storage/aws"
-  version = "0.24.1"
+  version = "0.25.0"
 
   kms_master_key_arn                 = module.kms_key.alias_arn
   sse_algorithm                      = "aws:kms"
@@ -175,6 +175,9 @@ module "s3_log_storage_bucket" {
   standard_transition_days           = var.standard_transition_days
   force_destroy                      = var.force_destroy
   policy                             = join("", data.aws_iam_policy_document.bucket.*.json)
+  bucket_notifications_enabled           = var.bucket_notifications_enabled
+  bucket_notifications_type       = var. bucket_notifications_type
+  bucket_notifications_prefix = var. bucket_notifications_prefix
 
   context = module.this.context
 }
