@@ -49,6 +49,6 @@ output "flow_log_arn" {
 }
 
 output "bucket_notifications_sqs_queue_arn" {
-  value       = module.s3_bucket.bucket_notifications_sqs_queue_arn
+  value       = module.s3_log_storage_bucket.bucket_notifications_sqs_queue_arn
   description = "Notifications SQS queue ARN"
 }
