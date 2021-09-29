@@ -23,6 +23,7 @@ module "flow_logs" {
   glacier_transition_days            = var.glacier_transition_days
   expiration_days                    = var.expiration_days
   traffic_type                       = var.traffic_type
+  allow_ssl_requests_only            = var.allow_ssl_requests_only
   vpc_id                             = module.vpc.vpc_id
 
   # For testing
