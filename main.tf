@@ -148,7 +148,7 @@ data "aws_iam_policy_document" "bucket" {
 
 module "kms_key" {
   source  = "cloudposse/kms-key/aws"
-  version = "0.11.0"
+  version = "0.12.0"
 
   description             = "KMS key for VPC Flow Logs"
   deletion_window_in_days = 10
