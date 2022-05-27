@@ -99,3 +99,15 @@ variable "bucket_notifications_prefix" {
   description = "Prefix filter. Used to manage object notifications"
   default     = ""
 }
+
+variable "access_log_bucket_name" {
+  type        = string
+  description = "Name of the S3 bucket where s3 access log will be sent to"
+  default     = null
+}
+
+variable "access_log_bucket_prefix" {
+  type        = string
+  description = "Prefix to prepend to the current S3 bucket name, where S3 access logs will be sent to"
+  default     = null
+}
