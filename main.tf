@@ -147,6 +147,7 @@ data "aws_iam_policy_document" "bucket" {
 }
 
 module "kms_key" {
+  count   = var.use_custom_kms ? 0 : 1
   source  = "cloudposse/kms-key/aws"
   version = "0.12.1"
 
@@ -162,7 +163,7 @@ module "s3_log_storage_bucket" {
   source  = "cloudposse/s3-log-storage/aws"
   version = "0.26.0"
 
-  kms_master_key_arn                 = module.kms_key.alias_arn
+  kms_master_key_arn                 = var.use_custom_kms ? var.custom_kms_arn : module.kms_key.alias_arn
   sse_algorithm                      = "aws:kms"
   versioning_enabled                 = false
   expiration_days                    = var.expiration_days
