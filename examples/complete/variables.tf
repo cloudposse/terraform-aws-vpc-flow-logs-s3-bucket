@@ -68,3 +68,9 @@ variable "flow_log_enabled" {
   default     = true
   description = "Enable/disable the Flow Log creation. Useful in multi-account environments where the bucket is in one account, but VPC Flow Logs are in different accounts"
 }
+
+variable "kms_key_arn" {
+  type        = string
+  default     = ""
+  description = "If provided will be used for the S3 bucket encryption. If not provided a KMS will be created for you."
+}

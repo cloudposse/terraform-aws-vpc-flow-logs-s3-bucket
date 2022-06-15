@@ -111,3 +111,9 @@ variable "access_log_bucket_prefix" {
   description = "Prefix to prepend to the current S3 bucket name, where S3 access logs will be sent to"
   default     = "logs/"
 }
+
+variable "kms_key_arn" {
+  type        = string
+  description = "ARN of KMS that will be used for s3 bucket encryption."
+  default     = ""
+}
