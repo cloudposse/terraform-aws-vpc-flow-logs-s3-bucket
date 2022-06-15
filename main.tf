@@ -1,7 +1,7 @@
 locals {
-  arn_format = "arn:${data.aws_partition.current.partition}"
-  create_kms = (var.custom_kms_arn == null || var.custom_kms_arn == "")
-  kms_key_arn = local.create_kms ? module.kms_key.alias_arn  : var.custom_kms_arn
+  arn_format  = "arn:${data.aws_partition.current.partition}"
+  create_kms  = (var.custom_kms_arn == null || var.custom_kms_arn == "")
+  kms_key_arn = local.create_kms ? module.kms_key.alias_arn : var.custom_kms_arn
 }
 
 data "aws_partition" "current" {}
