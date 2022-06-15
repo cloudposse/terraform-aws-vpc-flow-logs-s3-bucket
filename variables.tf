@@ -112,7 +112,7 @@ variable "access_log_bucket_prefix" {
   default     = "logs/"
 }
 
-variable "custom_kms_arn" {
+variable "kms_key_arn" {
   type        = string
   description = "ARN of KMS that will be used for s3 bucket encryption."
   default     = ""
