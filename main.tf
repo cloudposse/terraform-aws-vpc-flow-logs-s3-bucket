@@ -4,9 +4,6 @@ locals {
   kms_key_arn = local.create_kms ? module.kms_key.alias_arn  : var.custom_kms_arn
 }
 
-locals {
-}
-
 data "aws_partition" "current" {}
 
 data "aws_caller_identity" "current" {}
