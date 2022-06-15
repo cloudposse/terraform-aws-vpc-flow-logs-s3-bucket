@@ -114,6 +114,6 @@ variable "access_log_bucket_prefix" {
 
 variable "custom_kms_arn" {
   type        = string
-  description = "ARN of KMS that will be used for s3 bucket encryption. Will only be used if 'use_custom_kms' is true. "
+  description = "ARN of KMS that will be used for s3 bucket encryption."
   default     = ""
 }
