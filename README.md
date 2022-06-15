@@ -66,7 +66,7 @@ We literally have [*hundreds of terraform modules*][terraform_modules] that are 
 The module will create:
 
 * S3 bucket with server side encryption
-* KMS key to encrypt flow logs files in the bucket unless `custom_kms_arn` is provided. Then the module will not create a kms key for you. 
+* KMS key to encrypt flow logs files in the bucket
 * Optional VPC Flow Log backed by the S3 bucket (this can be disabled, e.g. in multi-account environments if you want to create an S3 bucket in one account and VPC Flow Logs in different accounts)
 
 
