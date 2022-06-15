@@ -66,7 +66,7 @@ We literally have [*hundreds of terraform modules*][terraform_modules] that are 
 The module will create:
 
 * S3 bucket with server side encryption
-* KMS key to encrypt flow logs files in the bucket
+* KMS key to encrypt flow logs files in the bucket unless `custom_kms_arn` is provided. Then the module will not create a kms key for you. 
 * Optional VPC Flow Log backed by the S3 bucket (this can be disabled, e.g. in multi-account environments if you want to create an S3 bucket in one account and VPC Flow Logs in different accounts)
 
 
@@ -222,7 +222,6 @@ Available targets:
 | <a name="input_tags"></a> [tags](#input\_tags) | Additional tags (e.g. `{'BusinessUnit': 'XYZ'}`).<br>Neither the tag keys nor the tag values will be modified by this module. | `map(string)` | `{}` | no |
 | <a name="input_tenant"></a> [tenant](#input\_tenant) | ID element \_(Rarely used, not included by default)\_. A customer identifier, indicating who this instance of a resource is for | `string` | `null` | no |
 | <a name="input_traffic_type"></a> [traffic\_type](#input\_traffic\_type) | The type of traffic to capture. Valid values: `ACCEPT`, `REJECT`, `ALL` | `string` | `"ALL"` | no |
-| <a name="input_use_custom_kms"></a> [use\_custom\_kms](#input\_use\_custom\_kms) | Flag to indicate whether or not we will use the KMS created by this component. Or use the KMS ARN passed into the 'custom\_kms\_arn' variable. | `bool` | `false` | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | VPC ID to create flow logs for | `string` | `null` | no |
 
 ## Outputs

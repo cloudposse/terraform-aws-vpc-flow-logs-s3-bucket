@@ -112,12 +112,6 @@ variable "access_log_bucket_prefix" {
   default     = "logs/"
 }
 
-variable "use_custom_kms" {
-  type        = bool
-  description = "Flag to indicate whether or not we will use the KMS created by this component. Or use the KMS ARN passed into the 'custom_kms_arn' variable. "
-  default     = false
-}
-
 variable "custom_kms_arn" {
   type        = string
   description = "ARN of KMS that will be used for s3 bucket encryption. Will only be used if 'use_custom_kms' is true. "
