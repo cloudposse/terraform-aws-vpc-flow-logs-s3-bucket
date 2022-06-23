@@ -163,11 +163,11 @@ module "kms_key" {
 
 module "s3_log_storage_bucket" {
   source  = "cloudposse/s3-log-storage/aws"
-  version = "0.26.0"
+  version = "0.28.0"
 
   kms_master_key_arn                 = local.kms_key_arn
   sse_algorithm                      = "aws:kms"
-  versioning_enabled                 = false
+  versioning_enabled                 = var.versioning_enabled
   expiration_days                    = var.expiration_days
   glacier_transition_days            = var.glacier_transition_days
   lifecycle_prefix                   = var.lifecycle_prefix
@@ -183,7 +183,8 @@ module "s3_log_storage_bucket" {
   bucket_notifications_prefix        = var.bucket_notifications_prefix
   access_log_bucket_name             = var.access_log_bucket_name
   access_log_bucket_prefix           = var.access_log_bucket_prefix
-
+  s3_object_ownership                = var.s3_object_ownership
+  acl                                = var.acl
   context = module.this.context
 }
 
