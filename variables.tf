@@ -11,6 +11,10 @@ variable "bucket_name" {
     EOT
   default     = ""
   nullable    = false
+  validation {
+    condition     = length(var.bucket_name) <= 63
+    error_message = "Bucket name, if provided, must be <= 63 characters."
+  }
 }
 
 variable "force_destroy" {

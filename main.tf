@@ -1,7 +1,7 @@
 locals {
   enabled = module.this.enabled
 
-  bucket_name = length(var.bucket_name) > 0 ? var.bucket_name : module.this.id
+  bucket_name = length(var.bucket_name) > 0 ? var.bucket_name : module.bucket_name.id
 
   arn_format  = "arn:${data.aws_partition.current.partition}"
   create_kms  = local.enabled && (var.kms_key_arn == null || var.kms_key_arn == "")
@@ -10,6 +10,17 @@ locals {
   lifecycle_configuration_rules = (local.deprecated_lifecycle_rule.enabled ?
     tolist(concat(var.lifecycle_configuration_rules, [local.deprecated_lifecycle_rule])) : var.lifecycle_configuration_rules
   )
+}
+
+module "bucket_name" {
+  source  = "cloudposse/label/null"
+  version = "0.25.0"
+
+  enabled = local.enabled && length(var.bucket_name) == 0
+
+  id_length_limit = 63 # https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html
+
+  context = module.this.context
 }
 
 data "aws_partition" "current" {}
@@ -190,7 +201,7 @@ module "s3_log_storage_bucket" {
   source  = "cloudposse/s3-log-storage/aws"
   version = "1.2.0"
 
-  bucket_name = var.bucket_name
+  bucket_name = local.bucket_name
 
   kms_master_key_arn = local.kms_key_arn
   sse_algorithm      = "aws:kms"
