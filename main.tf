@@ -199,7 +199,7 @@ module "kms_key" {
 
 module "s3_log_storage_bucket" {
   source  = "cloudposse/s3-log-storage/aws"
-  version = "1.3.1"
+  version = "1.4.0"
 
   bucket_name = local.bucket_name
 
