@@ -216,3 +216,8 @@ variable "object_lock_configuration" {
   default     = null
 }
 
+variable "log_format" {
+  description = "The fields to include in the flow log record, in the order in which they should appear."
+  type        = string
+  default     = null
+}
