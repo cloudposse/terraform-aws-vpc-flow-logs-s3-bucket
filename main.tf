@@ -181,7 +181,7 @@ data "aws_iam_policy_document" "bucket" {
 module "kms_key" {
   enabled = local.create_kms
   source  = "cloudposse/kms-key/aws"
-  version = "0.12.1"
+  version = "0.12.2"
 
   alias = format("alias/%v", local.bucket_name)
 
