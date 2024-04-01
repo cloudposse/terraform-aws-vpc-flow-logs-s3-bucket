@@ -1,0 +1,7 @@
+# Upstream changes from _extends are only recognized when modifications are made to this file in the default branch.
+_extends: .github
+repository:
+  name: terraform-aws-vpc-flow-logs-s3-bucket
+  description: Terraform module to provision s3-backed flow logs for VPC and subnets
+  homepage: https://cloudposse.com/accelerate
+  topics: vpc, flowlogs, logging, s3, s3-bucket, subnets, hcl2
