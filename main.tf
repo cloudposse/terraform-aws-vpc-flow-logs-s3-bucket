@@ -235,4 +235,6 @@ resource "aws_flow_log" "default" {
   log_format           = var.log_format
   traffic_type         = var.traffic_type
   vpc_id               = var.vpc_id
+
+  tags = module.this.tags
 }
