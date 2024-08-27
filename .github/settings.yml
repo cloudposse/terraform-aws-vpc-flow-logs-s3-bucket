@@ -5,3 +5,4 @@ repository:
   description: Terraform module to provision s3-backed flow logs for VPC and subnets
   homepage: https://cloudposse.com/accelerate
   topics: vpc, flowlogs, logging, s3, s3-bucket, subnets, hcl2
+
