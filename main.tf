@@ -33,7 +33,7 @@ data "aws_iam_policy_document" "kms" {
   source_policy_documents = [var.kms_policy_source_json]
 
   statement {
-    sid    = "Enable Root User Permissions"
+    sid    = "EnableRootUserPermissions"
     effect = "Allow"
 
     actions = [
@@ -69,7 +69,7 @@ data "aws_iam_policy_document" "kms" {
   }
 
   statement {
-    sid    = "Allow VPC Flow Logs to use the key"
+    sid    = "AllowVPCFlowLogstousethekey"
     effect = "Allow"
 
     actions = [
