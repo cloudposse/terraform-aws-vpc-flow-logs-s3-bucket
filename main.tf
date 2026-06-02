@@ -10,6 +10,20 @@ locals {
   lifecycle_configuration_rules = (local.deprecated_lifecycle_rule.enabled ?
     tolist(concat(var.lifecycle_configuration_rules, [local.deprecated_lifecycle_rule])) : var.lifecycle_configuration_rules
   )
+
+  # Effective object ownership: null input selects the recommended BucketOwnerEnforced.
+  effective_ownership = var.s3_object_ownership == null ? "BucketOwnerEnforced" : var.s3_object_ownership
+
+  # With BucketOwnerEnforced, S3 has ACLs entirely disabled. The log-delivery service
+  # does not send the x-amz-acl header in that mode, so a StringEquals condition on
+  # s3:x-amz-acl will never match and will silently deny all writes.  Only include the
+  # ACL condition for ownership modes that still have ACLs enabled.
+  acl_condition_required = local.effective_ownership != "BucketOwnerEnforced"
+
+  # Source-scoping conditions for confused-deputy protection and cross-account delivery.
+  # Priority: org ID (broadest, single condition) > account list > none (same-account only).
+  use_org_condition     = length(var.flow_logs_source_org_id) > 0
+  use_account_condition = !local.use_org_condition && length(var.flow_logs_source_account_ids) > 0
 }
 
 module "bucket_name" {
@@ -91,13 +105,38 @@ data "aws_iam_policy_document" "kms" {
         "delivery.logs.amazonaws.com"
       ]
     }
+
+    # Mirror the same source scoping used on the bucket policy for confused-deputy protection.
+    dynamic "condition" {
+      for_each = local.use_org_condition ? [1] : []
+      content {
+        test     = "StringEquals"
+        variable = "aws:SourceOrgID"
+        values   = [var.flow_logs_source_org_id]
+      }
+    }
+    dynamic "condition" {
+      for_each = local.use_account_condition ? [1] : []
+      content {
+        test     = "StringEquals"
+        variable = "aws:SourceAccount"
+        values   = var.flow_logs_source_account_ids
+      }
+    }
   }
 }
 
-# https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-s3.html
+# https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-s3-permissions.html
 data "aws_iam_policy_document" "bucket" {
   count = module.this.enabled ? 1 : 0
 
+  # Grant the VPC Flow Logs delivery service permission to write log objects.
+  #
+  # The s3:x-amz-acl condition is only included when ACLs are enabled on the bucket
+  # (i.e. s3_object_ownership is ObjectWriter or BucketOwnerPreferred).  When
+  # BucketOwnerEnforced is in effect, S3 rejects all ACL-related headers; the
+  # delivery service sends no ACL header in that mode, so a StringEquals condition
+  # on s3:x-amz-acl would never match and would silently deny every write.
   statement {
     sid = "AWSLogDeliveryWrite"
 
@@ -114,16 +153,53 @@ data "aws_iam_policy_document" "bucket" {
       "${local.arn_format}:s3:::${local.bucket_name}/*"
     ]
 
-    condition {
-      test     = "StringEquals"
-      variable = "s3:x-amz-acl"
+    # Only add the ACL condition when ownership mode allows ACLs.
+    dynamic "condition" {
+      for_each = local.acl_condition_required ? [1] : []
+      content {
+        test     = "StringEquals"
+        variable = "s3:x-amz-acl"
+        values   = ["bucket-owner-full-control"]
+      }
+    }
 
-      values = [
-        "bucket-owner-full-control"
-      ]
+    # Scope to a specific AWS Organization (takes priority over per-account scoping).
+    dynamic "condition" {
+      for_each = local.use_org_condition ? [1] : []
+      content {
+        test     = "StringEquals"
+        variable = "aws:SourceOrgID"
+        values   = [var.flow_logs_source_org_id]
+      }
+    }
+
+    # Scope to explicit account IDs when no org ID is provided.
+    dynamic "condition" {
+      for_each = local.use_account_condition ? [1] : []
+      content {
+        test     = "StringEquals"
+        variable = "aws:SourceAccount"
+        values   = var.flow_logs_source_account_ids
+      }
+    }
+
+    # Restrict to ARNs originating from the listed accounts (confused-deputy protection).
+    dynamic "condition" {
+      for_each = local.use_account_condition ? [1] : []
+      content {
+        test     = "ArnLike"
+        variable = "aws:SourceArn"
+        values = [
+          for id in var.flow_logs_source_account_ids :
+          "${local.arn_format}:logs:*:${id}:*"
+        ]
+      }
     }
   }
 
+  # Grant the delivery service permission to read the bucket ACL. The log-delivery service calls
+  # GetBucketAcl as part of its pre-write checks regardless of Object Ownership mode; this is a
+  # bucket-policy read and is unrelated to ACL enforcement.
   statement {
     sid = "AWSLogDeliveryAclCheck"
 
@@ -139,6 +215,37 @@ data "aws_iam_policy_document" "bucket" {
     resources = [
       "${local.arn_format}:s3:::${local.bucket_name}"
     ]
+
+    # Mirror the same source conditions applied to the Write statement.
+    dynamic "condition" {
+      for_each = local.use_org_condition ? [1] : []
+      content {
+        test     = "StringEquals"
+        variable = "aws:SourceOrgID"
+        values   = [var.flow_logs_source_org_id]
+      }
+    }
+
+    dynamic "condition" {
+      for_each = local.use_account_condition ? [1] : []
+      content {
+        test     = "StringEquals"
+        variable = "aws:SourceAccount"
+        values   = var.flow_logs_source_account_ids
+      }
+    }
+
+    dynamic "condition" {
+      for_each = local.use_account_condition ? [1] : []
+      content {
+        test     = "ArnLike"
+        variable = "aws:SourceArn"
+        values = [
+          for id in var.flow_logs_source_account_ids :
+          "${local.arn_format}:logs:*:${id}:*"
+        ]
+      }
+    }
   }
 
   dynamic "statement" {
@@ -188,7 +295,7 @@ module "kms_key" {
   description             = "KMS key for VPC Flow Logs"
   deletion_window_in_days = 10
   enable_key_rotation     = true
-  policy                  = join("", data.aws_iam_policy_document.kms.*.json)
+  policy                  = join("", data.aws_iam_policy_document.kms[*].json)
 
   context = module.this.context
 
@@ -213,8 +320,8 @@ module "s3_log_storage_bucket" {
   force_destroy = var.force_destroy
 
   acl                     = var.acl
-  s3_object_ownership     = var.s3_object_ownership == null ? "BucketOwnerEnforced" : var.s3_object_ownership
-  source_policy_documents = data.aws_iam_policy_document.bucket.*.json
+  s3_object_ownership     = local.effective_ownership
+  source_policy_documents = data.aws_iam_policy_document.bucket[*].json
 
   bucket_notifications_enabled = var.bucket_notifications_enabled
   bucket_notifications_type    = var.bucket_notifications_type

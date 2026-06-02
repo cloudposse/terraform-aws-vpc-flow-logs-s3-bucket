@@ -26,6 +26,8 @@ module "flow_logs" {
   allow_ssl_requests_only            = var.allow_ssl_requests_only
   vpc_id                             = module.vpc.vpc_id
   kms_key_arn                        = var.kms_key_arn
+  flow_logs_source_org_id            = var.flow_logs_source_org_id
+  flow_logs_source_account_ids       = var.flow_logs_source_account_ids
 
   # For testing
   force_destroy = true

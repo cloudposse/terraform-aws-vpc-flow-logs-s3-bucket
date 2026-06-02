@@ -221,3 +221,33 @@ variable "log_format" {
   type        = string
   default     = null
 }
+
+variable "flow_logs_source_account_ids" {
+  type        = list(string)
+  description = <<-EOT
+    List of AWS account IDs that are authorized to deliver VPC Flow Logs to this bucket.
+    When set, adds `aws:SourceAccount` and `aws:SourceArn` conditions to the bucket delivery policy
+    statements, preventing confused-deputy attacks and enabling cross-account log delivery.
+    Multiple accounts may be listed (e.g., all spoke accounts in a landing zone).
+    When both `flow_logs_source_account_ids` and `flow_logs_source_org_id` are empty (the default),
+    no source conditions are added and the policy permits delivery from any account — this preserves
+    backward compatibility for single-account deployments.
+    EOT
+  default     = []
+  nullable    = false
+}
+
+variable "flow_logs_source_org_id" {
+  type        = string
+  description = <<-EOT
+    AWS Organizations ID (e.g. `o-xxxxxxxxxx`) whose member accounts are authorized to deliver
+    VPC Flow Logs to this bucket. When set, adds an `aws:SourceOrgID` condition to the bucket
+    delivery policy statements. This is the simplest way to authorize all accounts in an
+    organization without listing each account individually.
+    Takes precedence over `flow_logs_source_account_ids` when both are set.
+    When empty (the default), no source condition is added — backward-compatible for
+    single-account deployments.
+    EOT
+  default     = ""
+  nullable    = false
+}

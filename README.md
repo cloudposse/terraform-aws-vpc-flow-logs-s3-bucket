@@ -53,6 +53,20 @@ The module will create:
 * KMS key to encrypt flow logs files in the bucket
 * Optional VPC Flow Log backed by the S3 bucket (this can be disabled, e.g. in multi-account environments if you want to create an S3 bucket in one account and VPC Flow Logs in different accounts)
 
+**Cross-account / multi-account delivery**: When centralizing VPC Flow Logs from multiple
+AWS accounts into a single Log Archive account, set either `flow_logs_source_org_id`
+(to authorize all accounts in an AWS Organization) or `flow_logs_source_account_ids`
+(to list individual accounts). These add `aws:SourceOrgID` / `aws:SourceAccount` +
+`aws:SourceArn` conditions to the bucket delivery policy for confused-deputy protection.
+The KMS key policy is scoped with the same `aws:SourceOrgID` / `aws:SourceAccount` conditions
+so cross-account key usage is equally protected.
+
+**`BucketOwnerEnforced` compatibility**: When `s3_object_ownership` is `BucketOwnerEnforced`
+(the recommended setting, and the default when `null` is passed), the module omits the
+`s3:x-amz-acl` condition from the `AWSLogDeliveryWrite` policy statement. With ACLs
+disabled, the delivery service sends no ACL header, so a `StringEquals s3:x-amz-acl`
+condition would never match and would silently deny all log writes.
+
 
 
 
@@ -155,6 +169,8 @@ For automated tests of the complete example using [bats](https://github.com/bats
 | <a name="input_environment"></a> [environment](#input\_environment) | ID element. Usually used for region e.g. 'uw2', 'us-west-2', OR role 'prod', 'staging', 'dev', 'UAT' | `string` | `null` | no |
 | <a name="input_expiration_days"></a> [expiration\_days](#input\_expiration\_days) | (Deprecated, use `lifecycle_configuration_rules` instead)<br/>Number of days after which to expunge the objects | `number` | `null` | no |
 | <a name="input_flow_log_enabled"></a> [flow\_log\_enabled](#input\_flow\_log\_enabled) | Enable/disable the Flow Log creation. Useful in multi-account environments where the bucket is in one account, but VPC Flow Logs are in different accounts | `bool` | `true` | no |
+| <a name="input_flow_logs_source_account_ids"></a> [flow\_logs\_source\_account\_ids](#input\_flow\_logs\_source\_account\_ids) | List of AWS account IDs that are authorized to deliver VPC Flow Logs to this bucket.<br/>When set, adds `aws:SourceAccount` and `aws:SourceArn` conditions to the bucket delivery policy<br/>statements, preventing confused-deputy attacks and enabling cross-account log delivery.<br/>Multiple accounts may be listed (e.g., all spoke accounts in a landing zone).<br/>When both `flow_logs_source_account_ids` and `flow_logs_source_org_id` are empty (the default),<br/>no source conditions are added and the policy permits delivery from any account — this preserves<br/>backward compatibility for single-account deployments. | `list(string)` | `[]` | no |
+| <a name="input_flow_logs_source_org_id"></a> [flow\_logs\_source\_org\_id](#input\_flow\_logs\_source\_org\_id) | AWS Organizations ID (e.g. `o-xxxxxxxxxx`) whose member accounts are authorized to deliver<br/>VPC Flow Logs to this bucket. When set, adds an `aws:SourceOrgID` condition to the bucket<br/>delivery policy statements. This is the simplest way to authorize all accounts in an<br/>organization without listing each account individually.<br/>Takes precedence over `flow_logs_source_account_ids` when both are set.<br/>When empty (the default), no source condition is added — backward-compatible for<br/>single-account deployments. | `string` | `""` | no |
 | <a name="input_force_destroy"></a> [force\_destroy](#input\_force\_destroy) | A boolean that indicates all objects should be deleted from the bucket so that the bucket can be destroyed without error. These objects are not recoverable | `bool` | `false` | no |
 | <a name="input_glacier_transition_days"></a> [glacier\_transition\_days](#input\_glacier\_transition\_days) | (Deprecated, use `lifecycle_configuration_rules` instead)<br/>Number of days after which to move the data to the Glacier Flexible Retrieval storage tier | `number` | `null` | no |
 | <a name="input_id_length_limit"></a> [id\_length\_limit](#input\_id\_length\_limit) | Limit `id` to this many characters (minimum 6).<br/>Set to `0` for unlimited length.<br/>Set to `null` for keep the existing setting, which defaults to `0`.<br/>Does not affect `id_full`. | `number` | `null` | no |
@@ -368,3 +384,4 @@ Copyright © 2017-2025 [Cloud Posse, LLC](https://cpco.io/copyright)
 <a href="https://cloudposse.com/readme/footer/link?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/terraform-aws-vpc-flow-logs-s3-bucket&utm_content=readme_footer_link"><img alt="README footer" src="https://cloudposse.com/readme/footer/img"/></a>
 
 <img alt="Beacon" width="0" src="https://ga-beacon.cloudposse.com/UA-76589703-4/cloudposse/terraform-aws-vpc-flow-logs-s3-bucket?pixel&cs=github&cm=readme&an=terraform-aws-vpc-flow-logs-s3-bucket"/>
+

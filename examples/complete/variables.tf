@@ -74,3 +74,15 @@ variable "kms_key_arn" {
   default     = ""
   description = "If provided will be used for the S3 bucket encryption. If not provided a KMS will be created for you."
 }
+
+variable "flow_logs_source_org_id" {
+  type        = string
+  description = "AWS Organizations ID authorized to deliver VPC Flow Logs to this bucket. Leave empty for single-account deployments."
+  default     = ""
+}
+
+variable "flow_logs_source_account_ids" {
+  type        = list(string)
+  description = "List of AWS account IDs authorized to deliver VPC Flow Logs to this bucket. Leave empty for single-account deployments."
+  default     = []
+}

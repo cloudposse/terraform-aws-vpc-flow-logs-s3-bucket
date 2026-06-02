@@ -39,12 +39,12 @@ output "bucket_prefix" {
 }
 
 output "flow_log_id" {
-  value       = join("", aws_flow_log.default.*.id)
+  value       = join("", aws_flow_log.default[*].id)
   description = "Flow Log ID"
 }
 
 output "flow_log_arn" {
-  value       = join("", aws_flow_log.default.*.arn)
+  value       = join("", aws_flow_log.default[*].arn)
   description = "Flow Log ARN"
 }
 

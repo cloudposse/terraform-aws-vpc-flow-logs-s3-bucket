@@ -46,6 +46,20 @@ introduction: |-
   * KMS key to encrypt flow logs files in the bucket
   * Optional VPC Flow Log backed by the S3 bucket (this can be disabled, e.g. in multi-account environments if you want to create an S3 bucket in one account and VPC Flow Logs in different accounts)
 
+  **Cross-account / multi-account delivery**: When centralizing VPC Flow Logs from multiple
+  AWS accounts into a single Log Archive account, set either `flow_logs_source_org_id`
+  (to authorize all accounts in an AWS Organization) or `flow_logs_source_account_ids`
+  (to list individual accounts). These add `aws:SourceOrgID` / `aws:SourceAccount` +
+  `aws:SourceArn` conditions to the bucket delivery policy for confused-deputy protection.
+  The KMS key policy is scoped with the same `aws:SourceOrgID` / `aws:SourceAccount` conditions
+  so cross-account key usage is equally protected.
+
+  **`BucketOwnerEnforced` compatibility**: When `s3_object_ownership` is `BucketOwnerEnforced`
+  (the recommended setting, and the default when `null` is passed), the module omits the
+  `s3:x-amz-acl` condition from the `AWSLogDeliveryWrite` policy statement. With ACLs
+  disabled, the delivery service sends no ACL header, so a `StringEquals s3:x-amz-acl`
+  condition would never match and would silently deny all log writes.
+
 # How to use this project
 usage: |-
   For a complete example, see [examples/complete](examples/complete).
@@ -54,6 +68,7 @@ usage: |-
   (which tests and deploys the example on Datadog), see [test](test).
 
 
+  Single-account (same account as bucket):
   ```hcl
     module "vpc" {
       source  = "cloudposse/vpc/aws"
@@ -74,6 +89,29 @@ usage: |-
       name       = "flowlogs"
 
       vpc_id = module.vpc.vpc_id
+    }
+  ```
+
+  Multi-account, org-wide (e.g. Log Archive bucket receiving logs from all accounts):
+  ```hcl
+    # Deployed in the Log Archive account; VPC Flow Logs created in spoke accounts.
+    module "flow_logs_bucket" {
+      source  = "cloudposse/vpc-flow-logs-s3-bucket/aws"
+      version = "0.8.0"
+
+      namespace  = "eg"
+      stage      = "prod"
+      name       = "flowlogs"
+
+      # Disable the inline flow log resource — spoke accounts create their own.
+      flow_log_enabled = false
+
+      # Authorize all accounts in the org to deliver logs to this bucket.
+      flow_logs_source_org_id = "o-xxxxxxxxxx"
+
+      # BucketOwnerEnforced (default) disables ACLs; the module omits the
+      # s3:x-amz-acl condition automatically to allow delivery to succeed.
+      s3_object_ownership = null
     }
   ```
 
