@@ -163,7 +163,7 @@ module "kms_key" {
 
 module "s3_log_storage_bucket" {
   source  = "cloudposse/s3-log-storage/aws"
-  version = "0.26.0"
+  version = "0.28.3"
 
   kms_master_key_arn                 = local.kms_key_arn
   sse_algorithm                      = "aws:kms"
