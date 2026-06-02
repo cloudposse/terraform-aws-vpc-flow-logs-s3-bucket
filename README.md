@@ -78,6 +78,7 @@ For automated tests of the complete example using [bats](https://github.com/bats
 (which tests and deploys the example on Datadog), see [test](test).
 
 
+Single-account (same account as bucket):
 ```hcl
   module "vpc" {
     source  = "cloudposse/vpc/aws"
@@ -101,6 +102,29 @@ For automated tests of the complete example using [bats](https://github.com/bats
   }
 ```
 
+Multi-account, org-wide (e.g. Log Archive bucket receiving logs from all accounts):
+```hcl
+  # Deployed in the Log Archive account; VPC Flow Logs created in spoke accounts.
+  module "flow_logs_bucket" {
+    source  = "cloudposse/vpc-flow-logs-s3-bucket/aws"
+    version = "0.8.0"
+
+    namespace  = "eg"
+    stage      = "prod"
+    name       = "flowlogs"
+
+    # Disable the inline flow log resource — spoke accounts create their own.
+    flow_log_enabled = false
+
+    # Authorize all accounts in the org to deliver logs to this bucket.
+    flow_logs_source_org_id = "o-xxxxxxxxxx"
+
+    # BucketOwnerEnforced (default) disables ACLs; the module omits the
+    # s3:x-amz-acl condition automatically to allow delivery to succeed.
+    s3_object_ownership = null
+  }
+```
+
 > [!IMPORTANT]
 > In Cloud Posse's examples, we avoid pinning modules to specific versions to prevent discrepancies between the documentation
 > and the latest released versions. However, for your own projects, we strongly advise pinning each module to the exact version
@@ -118,20 +142,20 @@ For automated tests of the complete example using [bats](https://github.com/bats
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.9.0 |
 
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.9.0 |
 
 ## Modules
 
 | Name | Source | Version |
-|------|--------|---------|
+| ---- | ------ | ------- |
 | <a name="module_bucket_name"></a> [bucket\_name](#module\_bucket\_name) | cloudposse/label/null | 0.25.0 |
 | <a name="module_kms_key"></a> [kms\_key](#module\_kms\_key) | cloudposse/kms-key/aws | 0.12.2 |
 | <a name="module_s3_log_storage_bucket"></a> [s3\_log\_storage\_bucket](#module\_s3\_log\_storage\_bucket) | cloudposse/s3-log-storage/aws | 2.0.0 |
@@ -140,7 +164,7 @@ For automated tests of the complete example using [bats](https://github.com/bats
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [aws_flow_log.default](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/flow_log) | resource |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_iam_policy_document.bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
@@ -150,7 +174,7 @@ For automated tests of the complete example using [bats](https://github.com/bats
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_access_log_bucket_name"></a> [access\_log\_bucket\_name](#input\_access\_log\_bucket\_name) | Name of the S3 bucket where S3 access log will be sent to | `string` | `""` | no |
 | <a name="input_access_log_bucket_prefix"></a> [access\_log\_bucket\_prefix](#input\_access\_log\_bucket\_prefix) | Prefix to prepend to the current S3 bucket name, where S3 access logs will be sent to | `string` | `"logs/"` | no |
 | <a name="input_acl"></a> [acl](#input\_acl) | The canned ACL to apply. We recommend log-delivery-write for compatibility with AWS services | `string` | `"log-delivery-write"` | no |
@@ -203,7 +227,7 @@ For automated tests of the complete example using [bats](https://github.com/bats
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_bucket_arn"></a> [bucket\_arn](#output\_bucket\_arn) | Bucket ARN |
 | <a name="output_bucket_domain_name"></a> [bucket\_domain\_name](#output\_bucket\_domain\_name) | FQDN of bucket |
 | <a name="output_bucket_id"></a> [bucket\_id](#output\_bucket\_id) | Bucket Name (aka ID) |
@@ -378,10 +402,9 @@ All other trademarks referenced herein are the property of their respective owne
 
 
 ---
-Copyright © 2017-2025 [Cloud Posse, LLC](https://cpco.io/copyright)
+Copyright © 2017-2026 [Cloud Posse, LLC](https://cpco.io/copyright)
 
 
 <a href="https://cloudposse.com/readme/footer/link?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/terraform-aws-vpc-flow-logs-s3-bucket&utm_content=readme_footer_link"><img alt="README footer" src="https://cloudposse.com/readme/footer/img"/></a>
 
 <img alt="Beacon" width="0" src="https://ga-beacon.cloudposse.com/UA-76589703-4/cloudposse/terraform-aws-vpc-flow-logs-s3-bucket?pixel&cs=github&cm=readme&an=terraform-aws-vpc-flow-logs-s3-bucket"/>
-
